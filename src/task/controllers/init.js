@@ -17,16 +17,21 @@ module.exports = {
             // const timezone = CONSTANTS.TIME_ZONE;
     
             const sincronize = async () => {
-                updateSync();
                 verifyAndSincronizeUsers();
+
+
+                
+                updateSync();
             }
     
             await sincronize();
     
             // Executa a sincronização de usuários a cada hora
             schedule.scheduleJob('* * * * *', async () => {
-                await updateSync();
                 await verifyAndSincronizeUsers();
+
+
+                await updateSync();
             });
         } catch (error) {
             Log.error({
