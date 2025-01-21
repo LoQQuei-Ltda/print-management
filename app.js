@@ -12,6 +12,9 @@ const apiRouter = require('./api/index');
 // Importações de middlewares
 const { userInfo } = require('./middleware/userInfo');
 
+// Importações de tarefas
+const { schedulerInit } = require('./src/task/controllers/init');
+
 // Cria o aplicativo Express
 const app = express();
 
@@ -20,6 +23,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(logger('dev'));
 app.use(userInfo);
+
+// Tarefas
+schedulerInit();
 
 // CORS
 app.use(cors());

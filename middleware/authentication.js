@@ -39,7 +39,7 @@ module.exports = {
 
             const deviceIp = userInfo.ipv4;
 
-            if (process.env.IP_SERVER != deviceIp) {
+            if (CONSTANTS.SERVER.IP != deviceIp) {
                 return responseHandler.forbidden(response, 'Dispositivo não autorizado para usar essa chave de API');
             }
 
