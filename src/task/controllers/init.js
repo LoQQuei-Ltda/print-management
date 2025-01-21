@@ -5,6 +5,14 @@ const CONSTANTS = require('../../../helper/constants');
 const { updateSync } = require('../../updateSync/controllers/sync');
 const { verifyAndSincronizeUsers } = require('../../users/controllers/verify');
 
+const sincronize = async () => {
+    verifyAndSincronizeUsers();
+
+
+    
+    updateSync();
+}
+
 module.exports = {
     schedulerInit: async () => {
         try {
@@ -15,14 +23,6 @@ module.exports = {
             }
     
             // const timezone = CONSTANTS.TIME_ZONE;
-    
-            const sincronize = async () => {
-                verifyAndSincronizeUsers();
-
-
-                
-                updateSync();
-            }
     
             await sincronize();
     
@@ -43,5 +43,6 @@ module.exports = {
             
             console.error(error);
         }
-    }
+    },
+    sincronize
 }
