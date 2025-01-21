@@ -2,6 +2,7 @@ const Test = require('../models/test');
 const schedule = require('node-schedule');
 const Log = require('../../../helper/log');
 const CONSTANTS = require('../../../helper/constants');
+const { updateSync } = require('../../updateSync/controllers/sync');
 const { verifyAndSincronizeUsers } = require('../../users/controllers/verify');
 
 module.exports = {
@@ -16,6 +17,7 @@ module.exports = {
             // const timezone = CONSTANTS.TIME_ZONE;
     
             const sincronize = async () => {
+                updateSync();
                 verifyAndSincronizeUsers();
             }
     
@@ -23,6 +25,7 @@ module.exports = {
     
             // Executa a sincronização de usuários a cada hora
             schedule.scheduleJob('* * * * *', async () => {
+                await updateSync();
                 await verifyAndSincronizeUsers();
             });
         } catch (error) {

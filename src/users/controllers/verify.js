@@ -11,14 +11,7 @@ module.exports = {
      */
     verifyAndSincronizeUsers: async () => {
         try {
-            const serverIp = CONSTANTS.SERVER.IP;
-            const serverPort = CONSTANTS.SERVER.PORT;
-
-            const response = await axios.get(`http://${serverIp}:${serverPort}/api/v1/manager/users`, {
-                headers: {
-                    'x-api-key': process.env.API_KEY
-                }
-            });
+            const response = await axios.get(`${CONSTANTS.SERVER.BASE_URL}/manager/users`, CONSTANTS.SERVER.HEADERS);
 
             let institutionUsers = response.data.data;
 
