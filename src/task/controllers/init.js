@@ -4,10 +4,11 @@ const Log = require('../../../helper/log');
 const CONSTANTS = require('../../../helper/constants');
 const { updateSync } = require('../../updateSync/controllers/sync');
 const { verifyAndSincronizeUsers } = require('../../users/controllers/verify');
+const { verifyAndSincronizeFiles } = require('../../monitor/controllers/verify');
 
 const sincronize = async () => {
     verifyAndSincronizeUsers();
-
+    verifyAndSincronizeFiles();
 
     
     updateSync();
@@ -29,7 +30,7 @@ module.exports = {
             // Executa a sincronização de usuários a cada hora
             schedule.scheduleJob('* * * * *', async () => {
                 await verifyAndSincronizeUsers();
-
+                await verifyAndSincronizeFiles();
 
                 await updateSync();
             });

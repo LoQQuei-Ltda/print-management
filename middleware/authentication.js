@@ -1,6 +1,9 @@
+const dotenv = require('dotenv');
 const Log = require("../helper/log");
 const CONSTANTS = require('../helper/constants');
 const responseHandler = require('../helper/responseHandler');
+
+dotenv.config();
 
 module.exports = {
     /**

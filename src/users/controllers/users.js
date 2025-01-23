@@ -1,5 +1,5 @@
 const User = require('../models/users');
-const Log = require('../../../helpers/log');
+const Log = require('../../../helper/log');
 const CONSTANTS = require('../../../helper/constants');
 const { createUserInSO } = require('../helpers/userInSO');
 

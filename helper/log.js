@@ -32,8 +32,6 @@ const createLogDB = async (data) => {
             userInfo || null
         ]);
 
-        await Log.insert(data);
-
         return {
             success: true
         }
@@ -66,10 +64,10 @@ module.exports = {
                 errorStack = null, userInfo = null 
             } = data;
         
-            const result = await createLogDB(
+            const result = await createLogDB({
                 userId, entity, operation, beforeData, afterData, 
                 errorMessage, errorStack, userInfo
-            );
+            });
 
             if (!result.success) {
                 console.error(result.message);

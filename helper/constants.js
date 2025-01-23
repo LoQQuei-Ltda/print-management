@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const CONSTANTS = {
     CUPS: {
         BASE_PATH: '/etc/cups',
@@ -5,12 +7,14 @@ const CONSTANTS = {
     LOG: {
         ERROR: 'error',
         MODULE: {
+            MONITOR: 'monitor',
             TASK: 'task',
             USER: 'user',
         }
     },
     SAMBA: {
-        BASE_PATH_FILES: '/srv/print_server',
+        BASE_PATH_FILES: 'C:\\Users\\eduardo.sirino\\Documents\\GitHub\\print-management\\monitor',
+        BASE_PATH_FILES2: '/srv/print_server',
     },
     SERVER: {
         // IP: '177.54.87.225',

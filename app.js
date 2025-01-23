@@ -1,7 +1,7 @@
 // Importações básicas
-const express = require('express');
 const cors = require('cors');
 const logger = require('morgan');
+const express = require('express');
 
 // Constantes
 const responseHandler = require('./helper/responseHandler');
@@ -15,6 +15,10 @@ const { userInfo } = require('./middleware/userInfo');
 // Importações de tarefas
 const { schedulerInit } = require('./src/task/controllers/init');
 
+// Importações de monitor
+const { monitorStart } = require('./src/monitor/controllers/monitor');
+
+
 // Cria o aplicativo Express
 const app = express();
 
@@ -26,6 +30,9 @@ app.use(userInfo);
 
 // Tarefas
 schedulerInit();
+
+// Monitor
+monitorStart();
 
 // CORS
 app.use(cors());

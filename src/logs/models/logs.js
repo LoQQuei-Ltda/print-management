@@ -1,4 +1,7 @@
+const dotenv = require('dotenv');
 const { Core } = require('../../../db/core');
+
+dotenv.config();
 
 const Log = {
     /**
@@ -8,7 +11,7 @@ const Log = {
      */
     insert: async (data) => {
         try {
-            const sql = 'INSERT INTO logs (id, createdAt, logType, userId, entity, operation, beforeData, afterData, errorMessage, errorStack, userInfo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *;';
+            const sql = `INSERT INTO ${process.env.DB_DATABASE}.logs (id, createdAt, logType, userId, entity, operation, beforeData, afterData, errorMessage, errorStack, userInfo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *;`;
 
             const log = await Core(sql, data);
 

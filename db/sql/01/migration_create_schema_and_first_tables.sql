@@ -31,3 +31,15 @@ CREATE TABLE IF NOT EXISTS ${DB_SCHEMA}.logs (
     PRIMARY KEY (id),
     FOREIGN KEY (userId) REFERENCES ${DB_SCHEMA}.users(id)
 );
+
+CREATE TABLE IF NOT EXISTS ${DB_SCHEMA}.filePages (
+    id varchar(50) NOT NULL,
+    userId varchar(50) NOT NULL,
+    pages int NOT NULL,
+    createdAt timestamp NOT NULL,
+    deletedAt timestamp DEFAULT NULL,
+    synced boolean NOT NULL DEFAULT false,
+    printed boolean NOT NULL DEFAULT false,
+    PRIMARY KEY (id),
+    FOREIGN KEY (userId) REFERENCES ${DB_SCHEMA}.users(id)
+);

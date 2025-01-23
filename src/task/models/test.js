@@ -11,7 +11,7 @@ const Test = {
         try {
             const sql = 'SELECT table_name FROM information_schema.tables WHERE table_schema = $1;';
 
-            const tables = await Core(sql, [process.env.DB_SCHEMA]);
+            const tables = await Core(sql, [process.env.DB_DATABASE]);
 
             return tables;
         } catch (error) {

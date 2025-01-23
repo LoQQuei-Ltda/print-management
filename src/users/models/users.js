@@ -1,6 +1,9 @@
+const dotenv = require('dotenv');
 const Log = require('../../../helper/log');
 const { Core } = require('../../../db/core');
 const CONSTANTS = require('../../../helper/constants');
+
+dotenv.config();
 
 module.exports = {
     /**
@@ -10,7 +13,7 @@ module.exports = {
      */
     getById: async (id) => {
         try {
-            const sql = `SELECT * FROM ${process.env.DB_SCHEMA}.users WHERE id = $1;`;
+            const sql = `SELECT * FROM ${process.env.DB_DATABASE}.users WHERE id = $1;`;
             const result = await Core(sql, [id]);
             return result;
         } catch (error) {
@@ -32,8 +35,9 @@ module.exports = {
      */
     insert: async (data) => {
         try {
-            const sql = `INSERT INTO ${process.env.DB_SCHEMA}.users (id, name, email, password, profile, createdAt, updatedAt, deletedAt) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);`;
-            await Core(sql, data);
+            const sql = `INSERT INTO ${process.env.DB_DATABASE}.users (id, name, email, password, profile, createdAt, updatedAt, deletedAt) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);`;
+            const result = await Core(sql, data);
+            return result;
         } catch (error) {
             Log.error({
                 entity: CONSTANTS.LOG.MODULE.USERS,
@@ -54,8 +58,9 @@ module.exports = {
      */
     update: async (data) => {
         try {
-            const sql = `UPDATE ${process.env.DB_SCHEMA}.users SET name = $1, email = $2, password = $3, profile = $4, createdAt = $5, updatedAt = $6, deletedAt = $7 WHERE id = $8;`;
-            await Core(sql, data);
+            const sql = `UPDATE ${process.env.DB_DATABASE}.users SET name = $1, email = $2, password = $3, profile = $4, createdAt = $5, updatedAt = $6, deletedAt = $7 WHERE id = $8;`;
+            const result = await Core(sql, data);
+            return result;
         } catch (error) {
             Log.error({
                 entity: CONSTANTS.LOG.MODULE.USERS,
