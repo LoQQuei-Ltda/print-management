@@ -8,6 +8,7 @@ const CONSTANTS = {
         ERROR: 'error',
         MODULE: {
             MONITOR: 'monitor',
+            PRINTERS: 'printers',
             TASK: 'task',
             USER: 'user',
         }

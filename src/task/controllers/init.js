@@ -5,11 +5,12 @@ const CONSTANTS = require('../../../helper/constants');
 const { updateSync } = require('../../updateSync/controllers/sync');
 const { verifyAndSincronizeUsers } = require('../../users/controllers/verify');
 const { verifyAndSincronizeFiles } = require('../../monitor/controllers/verify');
+const { verifyAndSincronizePrinters } = require('../../printers/controllers/verify');
 
 const sincronize = async () => {
     verifyAndSincronizeUsers();
     verifyAndSincronizeFiles();
-
+    verifyAndSincronizePrinters();
     
     updateSync();
 }
@@ -31,6 +32,7 @@ module.exports = {
             schedule.scheduleJob('* * * * *', async () => {
                 await verifyAndSincronizeUsers();
                 await verifyAndSincronizeFiles();
+                await verifyAndSincronizePrinters();
 
                 await updateSync();
             });

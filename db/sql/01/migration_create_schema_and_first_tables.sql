@@ -32,14 +32,14 @@ CREATE TABLE IF NOT EXISTS ${DB_SCHEMA}.logs (
     FOREIGN KEY (userId) REFERENCES ${DB_SCHEMA}.users(id)
 );
 
-CREATE TABLE IF NOT EXISTS ${DB_SCHEMA}.filePages (
+CREATE TYPE printer_status AS ENUM ('functional','expired useful life','powered off','obsolete','damaged','lost','disabled');
+
+CREATE TABLE IF NOT EXISTS ${DB_SCHEMA}.printers (
     id varchar(50) NOT NULL,
-    userId varchar(50) NOT NULL,
-    pages int NOT NULL,
+    name varchar(50) NOT NULL,
+    status printer_status NOT NULL,
     createdAt timestamp NOT NULL,
+    updatedAt timestamp NOT NULL,
     deletedAt timestamp DEFAULT NULL,
-    synced boolean NOT NULL DEFAULT false,
-    printed boolean NOT NULL DEFAULT false,
-    PRIMARY KEY (id),
-    FOREIGN KEY (userId) REFERENCES ${DB_SCHEMA}.users(id)
+    PRIMARY KEY (id)
 );

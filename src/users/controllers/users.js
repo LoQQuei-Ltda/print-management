@@ -81,6 +81,5 @@ module.exports = {
                 userInfo: request.user.userInfo
             });
         }
-    },
-    createUserInSO
+    }
 }
