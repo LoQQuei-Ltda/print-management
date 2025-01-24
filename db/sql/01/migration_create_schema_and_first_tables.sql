@@ -43,3 +43,18 @@ CREATE TABLE IF NOT EXISTS ${DB_SCHEMA}.printers (
     deletedAt timestamp DEFAULT NULL,
     PRIMARY KEY (id)
 );
+
+CREATE TABLE IF NOT EXISTS ${DB_SCHEMA}.filePages (
+    id varchar(50) NOT NULL,
+    userId varchar(50) NOT NULL,
+    assetId varchar(50) DEFAULT NULL,
+    pages int NOT NULL,
+    path TEXT NOT NULL,
+    createdAt timestamp NOT NULL,
+    deletedAt timestamp DEFAULT NULL,
+    synced BOOLEAN NOT NULL DEFAULT FALSE,
+    printed BOOLEAN NOT NULL DEFAULT FALSE,
+    PRIMARY KEY (id),
+    FOREIGN KEY (userId) REFERENCES ${DB_SCHEMA}.users(id),
+    FOREIGN KEY (assetId) REFERENCES ${DB_SCHEMA}.printers(id)
+);

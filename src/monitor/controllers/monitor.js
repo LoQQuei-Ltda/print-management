@@ -58,6 +58,9 @@ const deleteOldFiles = async (dirPath) => {
             }
     
             if (stats.isFile() && stats.mtime < cutoffDate) {
+                const id = file.replace(path.extname(file), '');
+                await FilesModel.delete(id);
+
                 await deleteFile(fullPath);
             }
         }
@@ -143,9 +146,9 @@ module.exports = {
                 return;
             }
 
-            const data = [id, userId, pages, new Date(), null, false, false];
+            const data = [id, userId, null, pages, newFilePath.toString(), new Date(), null, false, false];
 
-            await FilesModel.insert(data);
+             await FilesModel.insert(data);
         });
 
         watcher.on('change', async (filePath) => {
@@ -164,6 +167,12 @@ module.exports = {
             const fileId = path.basename(filePath).replace(path.extname(filePath), '');
 
             if (!uuidValidate(fileId)) {
+                return;
+            }
+
+            const result = await FilesModel.getById(fileId);
+
+            if (result && result.printed) {
                 return;
             }
 

@@ -3,6 +3,30 @@ const { Core } = require('../../../db/core');
 const CONSTANTS = require('../../../helper/constants');
 
 module.exports = {
+    getAll: async () => {
+        try {
+            const sql = `SELECT * FROM ${process.env.DB_DATABASE}.printers;`;
+
+            let printers = await Core(sql);
+
+            if (!Array.isArray(printers)) {
+                printers = [printers];
+            }
+            
+            return printers;
+        } catch (error) {
+            Log.error({
+                entity: CONSTANTS.LOG.MODULE.PRINTER,
+                operation: 'Get All Printers',
+                errorMessage: error.message,
+                errorStack: error.stack
+            })
+
+            return {
+                message: "Ocorreu um erro ao obter as impressoras! Tente novamente mais tarde"
+            };
+        }
+    },
     getById: async (id) => {
         try {
             const sql = `SELECT id, name, status, createdAt, updatedAt, deletedAt FROM ${process.env.DB_DATABASE}.printers WHERE id = $1;`;

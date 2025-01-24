@@ -8,6 +8,7 @@ const CONSTANTS = {
         ERROR: 'error',
         MODULE: {
             MONITOR: 'monitor',
+            PRINT_JOBS: 'print_jobs',
             PRINTERS: 'printers',
             TASK: 'task',
             USER: 'user',
@@ -20,7 +21,7 @@ const CONSTANTS = {
     SERVER: {
         // IP: '177.54.87.225',
         // PORT: '53000'
-        IP: 'localhost',
+        IP: '::1',
         PORT: '80',
         BASE_URL: 'http://localhost:80/api/v1',
         HEADERS: {

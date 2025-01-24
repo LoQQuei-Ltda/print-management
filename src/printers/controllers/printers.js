@@ -4,6 +4,27 @@ const CONSTANTS = require('../../../helper/constants');
 const responseHandler = require('../../../helper/responseHandler');
 
 module.exports = {
+    getPrinters: async (request, response) => {
+        try {
+            const printers = await Printer.getAll();
+
+            if (printers.message) {
+                return responseHandler.badRequest(response, printers.message);
+            }
+
+            return responseHandler.success(response, 'Impressoras encontradas!', printers);
+        } catch (error) {
+            Log.error({
+                entity: CONSTANTS.LOG.MODULE.PRINTERS,
+                operation: 'Get Printers',
+                errorMessage: error.message,
+                errorStack: error.stack,
+                userInfo: request.user.userInfo
+            });
+
+            return responseHandler.internalServerError(response, 'Ocorreu um erro ao obter as impressoras!');
+        }
+    },
     createPrinter: async (request, response) => {
         try {
             const { id, status, cupsName, createdAt } = request.body;

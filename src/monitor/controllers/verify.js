@@ -13,11 +13,11 @@ module.exports = {
             }
 
             for (let file of result) {
-                const { id, userid, pages } = file;
+                const { id, userid, pages, assetId } = file;
 
                 const body = {
                     userId: userid,
-                    assetId: '0192b050-e75a-788c-969e-b490bd6c7f3b', /// RETIRAR E CORRIGIR
+                    assetId: assetId,
                     pages
                 }
 

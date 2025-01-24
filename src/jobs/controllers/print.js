@@ -1,0 +1,46 @@
+const Log = require('../../../helper/log');
+const execSync = require('child_process').execSync;
+const Files = require('../../monitor/models/files');
+const CONSTANTS = require('../../../helper/constants');
+const Printers = require('../../printers/models/printers');
+const responseHandler = require('../../../helper/responseHandler');
+
+module.exports = {
+    printFile: async (request, response) => {
+        try {
+            const { fileId, assetId } = request.body;
+
+            const file = await Files.getById(fileId);
+
+            if (!file) {
+                return responseHandler.badRequest(response, 'Arquivo não encontrado!');
+            }
+
+            const printer = await Printers.getById(assetId);
+
+            if (!printer) {
+                return responseHandler.badRequest(response, 'Impressora não encontrada!');
+            }
+
+            const printerName = printer.name;
+
+            const result = await Files.updatePrinted(fileId, assetId);
+            if (result.message) {
+                return responseHandler.badRequest(response, 'Ocorreu um erro ao atualizar o arquivo!');
+            }
+
+            await execSync(`lp -d ${printerName} ${file.path}`);
+
+            return responseHandler.success(response, 'Arquivo impresso com sucesso!');
+        } catch (error) {
+            Log.error({
+                entity: CONSTANTS.LOG.MODULE.PRINT_JOBS,
+                operation: 'Print File',
+                errorMessage: error.message,
+                errorStack: error.stack
+            });
+
+            return responseHandler.internalServerError(response, 'Ocorreu um erro ao imprimir o documento!');
+        }
+    }
+}
