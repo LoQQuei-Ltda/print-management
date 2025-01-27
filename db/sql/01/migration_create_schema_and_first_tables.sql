@@ -1,8 +1,8 @@
-CREATE SCHEMA IF NOT EXISTS ${DB_SCHEMA};
+CREATE SCHEMA IF NOT EXISTS print_management;
 
 CREATE TYPE user_profile AS ENUM ('admin', 'manager', 'user');
 
-CREATE TABLE IF NOT EXISTS ${DB_SCHEMA}.users (
+CREATE TABLE IF NOT EXISTS print_management.users (
     id varchar(50) NOT NULL,
     name varchar(255) NOT NULL,
     email varchar(255) NOT NULL UNIQUE,
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS ${DB_SCHEMA}.users (
 
 CREATE TYPE log_type AS ENUM ('error', 'read', 'create', 'update', 'delete');
 
-CREATE TABLE IF NOT EXISTS ${DB_SCHEMA}.logs (
+CREATE TABLE IF NOT EXISTS print_management.logs (
     id varchar(50) NOT NULL,
     createdAt timestamp NOT NULL,
     logType log_type NOT NULL,
@@ -29,12 +29,12 @@ CREATE TABLE IF NOT EXISTS ${DB_SCHEMA}.logs (
     errorStack text DEFAULT NULL,
     userInfo jsonb DEFAULT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (userId) REFERENCES ${DB_SCHEMA}.users(id)
+    FOREIGN KEY (userId) REFERENCES print_management.users(id)
 );
 
 CREATE TYPE printer_status AS ENUM ('functional','expired useful life','powered off','obsolete','damaged','lost','disabled');
 
-CREATE TABLE IF NOT EXISTS ${DB_SCHEMA}.printers (
+CREATE TABLE IF NOT EXISTS print_management.printers (
     id varchar(50) NOT NULL,
     name varchar(50) NOT NULL,
     status printer_status NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS ${DB_SCHEMA}.printers (
     PRIMARY KEY (id)
 );
 
-CREATE TABLE IF NOT EXISTS ${DB_SCHEMA}.filePages (
+CREATE TABLE IF NOT EXISTS print_management.filePages (
     id varchar(50) NOT NULL,
     userId varchar(50) NOT NULL,
     assetId varchar(50) DEFAULT NULL,
@@ -55,6 +55,6 @@ CREATE TABLE IF NOT EXISTS ${DB_SCHEMA}.filePages (
     synced BOOLEAN NOT NULL DEFAULT FALSE,
     printed BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (id),
-    FOREIGN KEY (userId) REFERENCES ${DB_SCHEMA}.users(id),
-    FOREIGN KEY (assetId) REFERENCES ${DB_SCHEMA}.printers(id)
+    FOREIGN KEY (userId) REFERENCES print_management.users(id),
+    FOREIGN KEY (assetId) REFERENCES print_management.printers(id)
 );

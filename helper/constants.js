@@ -33,6 +33,13 @@ const CONSTANTS = {
             }
         }
     },
+    SNMP: {
+        COMMUNITY: 'public',
+        OID_PAGES_TOTAL: '1.3.6.1.2.1.43.10.2.1.4.1.1',
+        OID_DESCRIPTION: '1.3.6.1.2.1.43.10.2.1.4.1.1',
+        OID_LEVEL: '1.3.6.1.2.1.43.10.2.1.4.1.1',
+        PORT: 161
+    },
     TIME_ZONE: 'America/Sao_Paulo',
 }
 

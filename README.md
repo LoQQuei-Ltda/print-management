@@ -14,6 +14,7 @@ sudo mkdir -p /srv/print_server
 
 sudo chown -R nobody:nogroup /srv/print_server
 sudo chmod -R 0777 /srv/print_server
+sudo chmod -R 775 /srv/print_server
 
 sudo cupsctl --remote-any
 sudo systemctl restart cups
