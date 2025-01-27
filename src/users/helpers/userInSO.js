@@ -12,7 +12,7 @@ module.exports = {
      */
     createUserInSO: async (id, password) => {
         id = id.replace('-', '');
-        
+        console.log(id);
         try {
             execSync(`id -u ${id}`, { stdio: 'ignore' });
         } catch {
