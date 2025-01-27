@@ -7,7 +7,7 @@ if [ -f .env ]; then
 fi
 
 # Variáveis de ambiente
-MIGRATION_DIR=/db/sql
+MIGRATION_DIR=./db/sql
 LOG_FILE=/var/log/migrations.log
 DB_HOST=${DB_HOST:-db}
 DB_PORT=${DB_PORT:-5432}
