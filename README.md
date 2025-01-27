@@ -53,9 +53,9 @@ nano .env
 chmod +x db/migrate.sh
 sudo ./db/migrate.sh
 
-
 npm install
-npm start
+
+
 
 PM2
 
@@ -64,3 +64,14 @@ pm2 start ecosystem.config.js
 pm2 save
 pm2 startup
 
+NGINX
+
+sudo apt install -y nginx
+
+sudo nano /etc/nginx/sites-available/print-management
+
+sudo ln -s /etc/nginx/sites-available/print-management /etc/nginx/sites-enabled/
+
+sudo nginx -t
+
+sudo systemctl reload nginx

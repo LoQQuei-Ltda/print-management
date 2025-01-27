@@ -27,7 +27,7 @@ const { printFile } = require('../src/jobs/controllers/print');
 const router = express.Router();
 
 // Teste
-router.get('/', authenticatedRoute, async (request, response) => {
+router.get('/', async (request, response) => {
     return responseHandler.success(response, 'API ok');
 });
 
