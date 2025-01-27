@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS ${DB_SCHEMA}.users (
     profile user_profile NOT NULL DEFAULT 'user',
     createdAt timestamp NOT NULL,
     updatedAt timestamp NOT NULL,
-    deletedAt timestamp DEFAULT NULL
+    deletedAt timestamp DEFAULT NULL,
     PRIMARY KEY (id)
 );
 
