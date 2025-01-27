@@ -79,7 +79,7 @@ const getTonerLevels = async (
                     return false;
                 }
 
-                const oidParts = varbind.oid.split('.');
+                const oidParts = varbind.oid?.split('.');
                 const index = oidParts[oidParts.length - 1];
                 const description = varbind.value.toString();
                 const oidLevel = `${CONSTANTS.SNMP.OID_LEVEL}.${index}`;
