@@ -11,22 +11,22 @@ module.exports = {
      * @param {string} password 
      */
     createUserInSO: async (id, password) => {
-        id = id.replace('-', '');
-        console.log(id);
+        const username = id.replace('-', '');
+        console.log(username);
         try {
-            execSync(`id -u ${id}`, { stdio: 'ignore' });
+            execSync(`id -u ${username}`, { stdio: 'ignore' });
         } catch {
-            execSync(`sudo useradd -m -s /bin/bash --badname ${id}`);
-            execSync(`echo "${id}:${password}" | sudo chpasswd`);
+            execSync(`sudo useradd -m -s /bin/bash --badname ${username}`);
+            execSync(`echo "${username}:${password}" | sudo chpasswd`);
         }
     
-        const userFolder = `${basePath}/${id}`;
+        const userFolder = `${basePath}/${username}`;
     
         if (!fs.existsSync(userFolder)) {
             fs.mkdirSync(userFolder, { recursive: true });
         }
     
-        execSync(`sudo chown ${id}:${id} ${userFolder}`);
+        execSync(`sudo chown ${username}:${username} ${userFolder}`);
         execSync(`sudo chmod 700 ${userFolder}`);
     }
 } 
