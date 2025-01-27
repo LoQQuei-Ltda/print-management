@@ -9,7 +9,7 @@ fi
 BASE_DIR=$(dirname "$0")
 
 # Variáveis de ambiente
-MIGRATION_DIR="$BASE_DIR/db/sql"
+MIGRATION_DIR=/db/sql
 LOG_FILE=/var/log/migrations.log
 DB_HOST=${DB_HOST:-db}
 DB_PORT=${DB_PORT:-5432}
@@ -71,8 +71,8 @@ EOF
 # Executa a verificação do banco de dados
 check_db
 
+echo $BASE_DIR
 echo $MIGRATION_DIR
-echo pwd
 
 # Lista e ordena os diretórios de migração
 for dir in $(ls -d $MIGRATION_DIR/*/ | sort); do
