@@ -1,6 +1,9 @@
 // Importações básicas
 const express = require('express');
 
+// Resposta
+const responseHandler = require('../helper/responseHandler');
+
 // Importações de middleware
 const { authenticatedRoute }  = require('../middleware/authentication');
 
@@ -22,6 +25,11 @@ const { printFile } = require('../src/jobs/controllers/print');
 
 
 const router = express.Router();
+
+// Teste
+router.get('/', authenticatedRoute, async (request, response) => {
+    return responseHandler.success(response, 'API ok');
+});
 
 // Users 
 router.post('/users', authenticatedRoute, createUser);
