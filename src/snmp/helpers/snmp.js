@@ -79,6 +79,8 @@ const getTonerLevels = async (
                     return false;
                 }
 
+                console.log(varbind.oid);
+
                 const oidParts = varbind.oid?.split('.');
                 const index = oidParts[oidParts.length - 1];
                 const description = varbind.value.toString();
