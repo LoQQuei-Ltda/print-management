@@ -15,7 +15,8 @@ const CONSTANTS = {
         }
     },
     SAMBA: {
-        BASE_PATH_FILES: 'C:\\Users\\eduardo.sirino\\Documents\\GitHub\\print-management\\monitor',
+        // BASE_PATH_FILES: 'C:\\Users\\eduardo.sirino\\Documents\\GitHub\\print-management\\monitor',
+        BASE_PATH_FILES: '/srv/print_server',
         BASE_PATH_FILES2: '/srv/print_server',
     },
     SERVER: {
