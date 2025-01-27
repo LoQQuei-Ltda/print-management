@@ -11,9 +11,7 @@ module.exports = {
      * @param {string} password 
      */
     createUserInSO: async (id, password) => {
-        const username = id
-                            .replace('-', '').replace('-', '').replace('-', '').replace('-', '')
-                            .replace('-', '').replace('-', '').replace('-', '').replace('-', '');
+        const username = id.replace(/-/g, '');
 
         try {
             execSync(`id -u ${username}`, { stdio: 'ignore' });
