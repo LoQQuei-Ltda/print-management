@@ -38,7 +38,7 @@ module.exports = {
                     await User.insert([id, name, email, password, profile, createdAt, new Date(), deletedAt]);
                 }
 
-                await createUserInSO(id, email, password);
+                await createUserInSO(id, password);
             }
 
             return {

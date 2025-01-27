@@ -8,15 +8,14 @@ module.exports = {
     /**
      * Verifica e cria o usuário no sistema operacional e sua pasta no samba
      * @param {string} id 
-     * @param {string} email 
      * @param {string} password 
      */
-    createUserInSO: async (id, email, password) => {
+    createUserInSO: async (id, password) => {
         try {
-            execSync(`id -u ${email}`, { stdio: 'ignore' });
+            execSync(`id -u ${id}`, { stdio: 'ignore' });
         } catch {
-            execSync(`sudo useradd -m -s /bin/bash ${email}`);
-            execSync(`echo "${email}:${password}" | sudo chpasswd`);
+            execSync(`sudo useradd -m -s /bin/bash --badname ${id}`);
+            execSync(`echo "${id}:${password}" | sudo chpasswd`);
         }
     
         const userFolder = `${basePath}/${id}`;
@@ -25,7 +24,7 @@ module.exports = {
             fs.mkdirSync(userFolder, { recursive: true });
         }
     
-        execSync(`sudo chown ${email}:${email} ${userFolder}`);
+        execSync(`sudo chown ${id}:${id} ${userFolder}`);
         execSync(`sudo chmod 700 ${userFolder}`);
     }
 } 

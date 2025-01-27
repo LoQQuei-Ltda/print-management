@@ -28,7 +28,7 @@ module.exports = {
                 return response.status(400).json({ message: user.message });
             }
 
-            await createUserInSO(id, email, password);
+            await createUserInSO(id, password);
 
             return response.status(201).json({
                 message: 'Usuário criado com sucesso!'
@@ -67,7 +67,7 @@ module.exports = {
                 return response.status(400).json({ message: user.message });
             }
 
-            await createUserInSO(id, email, password);
+            await createUserInSO(id, password);
 
             return response.status(201).json({
                 message: 'Usuário alterado com sucesso!'

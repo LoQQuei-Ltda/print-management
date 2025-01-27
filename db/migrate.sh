@@ -2,6 +2,10 @@
 
 set -e
 
+if [ -f .env ]; then
+  source .env
+fi
+
 # Variáveis de ambiente
 MIGRATION_DIR=/db/sql
 LOG_FILE=/var/log/migrations.log
