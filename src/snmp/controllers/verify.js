@@ -40,7 +40,7 @@ const toner = async (printer) => {
 
     const response = await axios.post(`${CONSTANTS.SERVER.BASE_URL}/manager/inkLevel`, {
         assetId,
-        tonerLevels: tonerLevels.tonerLevels
+        inkData: tonerLevels.tonerLevels
     }, CONSTANTS.SERVER.HEADERS);
 
     if (response.status !== 200) {
