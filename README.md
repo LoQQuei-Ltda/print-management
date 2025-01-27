@@ -2,7 +2,7 @@
  
 sudo apt update && sudo apt upgrade -y
 
-sudo apt install net-tools nano samba cups nginx postgresql ufw -y
+sudo apt install net-tools nano samba cups nginx postgresql ufw pm2 -y
 
 sudo nano /etc/samba/smb.conf
 
@@ -57,8 +57,9 @@ sudo ./db/migrate.sh
 npm install
 npm start
 
-
-
-
-
 PM2
+
+pm2 start ecosystem.config.js
+pm2 startup
+pm2 save
+

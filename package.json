@@ -24,6 +24,7 @@
     "node-schedule": "^2.1.1",
     "pdf-lib": "^1.17.1",
     "pg": "^8.13.1",
+    "pm2": "^5.4.3",
     "uuid": "^11.0.5"
   },
   "devDependencies": {
