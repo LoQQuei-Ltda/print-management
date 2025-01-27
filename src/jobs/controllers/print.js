@@ -1,3 +1,4 @@
+const fs = require('fs');
 const Log = require('../../../helper/log');
 const execSync = require('child_process').execSync;
 const Files = require('../../monitor/models/files');
@@ -16,13 +17,26 @@ module.exports = {
                 return responseHandler.badRequest(response, 'Arquivo não encontrado!');
             }
 
+            if (file.message) {
+                return responseHandler.badRequest(response, file.message);
+            }
+
             const printer = await Printers.getById(assetId);
 
             if (!printer) {
                 return responseHandler.badRequest(response, 'Impressora não encontrada!');
             }
 
+            if (printer.message) {
+                return responseHandler.badRequest(response, printer.message);
+            }
+
             const printerName = printer.name;
+
+            if (!fs.existsSync(file.path)) {
+                await Files.delete(fileId);
+                return responseHandler.badRequest(response, 'Arquivo não encontrado!');
+            }
 
             const result = await Files.updatePrinted(fileId, assetId);
             if (result.message) {
