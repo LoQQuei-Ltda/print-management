@@ -10,7 +10,7 @@ const printed = async (printer) => {
 
     const response = await axios.post(`${CONSTANTS.SERVER.BASE_URL}/manager/printedPagesTotal`, {
         assetId,
-        pages
+        pages: pages.data
     }, CONSTANTS.SERVER.HEADERS);
 
     if (response.status !== 200) {
@@ -40,7 +40,7 @@ const toner = async (printer) => {
 
     const response = await axios.post(`${CONSTANTS.SERVER.BASE_URL}/manager/inkLevel`, {
         assetId,
-        tonerLevels
+        tonerLevels: tonerLevels.tonerLevels
     }, CONSTANTS.SERVER.HEADERS);
 
     if (response.status !== 200) {
