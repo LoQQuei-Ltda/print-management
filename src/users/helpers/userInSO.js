@@ -11,6 +11,8 @@ module.exports = {
      * @param {string} password 
      */
     createUserInSO: async (id, password) => {
+        id = id.replace('-', '');
+        
         try {
             execSync(`id -u ${id}`, { stdio: 'ignore' });
         } catch {
