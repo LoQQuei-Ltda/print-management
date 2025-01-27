@@ -28,16 +28,15 @@ const getPrintedPages = async (
                 });
             }
 
-            for (const varbind of varbinds) {
-                if (snmp.isVarbindError(varbind)) {
-                    return reject({
-                        success: false,
-                        message: `Erro no varbind: ${snmp.varbindError(varbind)}`
-                    });
-                }
+            const varbind = varbinds[0];
+            if (snmp.isVarbindError(varbind)) {
+                return reject({
+                    success: false,
+                    message: `Erro no varbind: ${snmp.varbindError(varbind)}`
+                });
             }
 
-            const data = varbinds[0]?.value?.toString() || '';
+            const data = varbind.value?.toString() || '';
             resolve({ success: true, data });
         });
 
@@ -67,64 +66,33 @@ const getTonerLevels = async (
         const session = snmp.createSession(ip, community, { port });
         const tonerLevels = {};
 
-        session.walk(
-            CONSTANTS.SNMP.OID_DESCRIPTION,
-            (varbind) => {
-                if (snmp.isVarbindError(varbind)) {
-                    reject({
-                        success: false,
-                        message: `Erro no varbind de descrição: ${snmp.varbindError(varbind)}`
-                    });
-                    session.close();
-                    return false;
-                }
+        const tonerOids = CONSTANTS.SNMP.TONER_OIDS;
 
-                console.log(varbind);
-                if (!varbind.oid) {
-                    return false;
-                }
+        session.get(tonerOids, (error, varbinds) => {
+            session.close();
 
-                const oidParts = varbind.oid.split('.');
-                const index = oidParts[oidParts.length - 1];
-                const description = varbind.value.toString();
-                const oidLevel = `${CONSTANTS.SNMP.OID_LEVEL}.${index}`;
-
-                session.get([oidLevel], (error, varbindsLevel) => {
-                    if (error) {
-                        reject({
-                            success: false,
-                            message: `Erro ao consultar nível SNMP: ${error.message}`
-                        });
-                        session.close();
-                        return;
-                    }
-
-                    const varbindLevel = varbindsLevel[0];
-                    if (snmp.isVarbindError(varbindLevel)) {
-                        reject({
-                            success: false,
-                            message: `Erro no varbind de nível para OID ${varbindLevel.oid}: ${snmp.varbindError(varbindLevel)}`
-                        });
-                        session.close();
-                        return;
-                    }
-
-                    const level = varbindLevel.value?.toString() || '';
-                    tonerLevels[description] = level;
+            if (error) {
+                return reject({
+                    success: false,
+                    message: `Erro ao consultar níveis de toner: ${error.message}`
                 });
-            },
-            (error) => {
-                session.close();
-                if (error) {
-                    reject({
-                        success: false,
-                        message: `Erro durante o walk SNMP: ${error.message}`
-                    });
-                } else {
-                    resolve({ success: true, tonerLevels });
-                }
             }
-        );
+
+            for (const varbind of varbinds) {
+                if (snmp.isVarbindError(varbind)) {
+                    return reject({
+                        success: false,
+                        message: `Erro no varbind: ${snmp.varbindError(varbind)}`
+                    });
+                }
+
+                const description = CONSTANTS.SNMP.TONER_DESCRIPTIONS[varbind.oid] || varbind.oid;
+                const level = varbind.value?.toString() || '';
+                tonerLevels[description] = level;
+            }
+
+            resolve({ success: true, tonerLevels });
+        });
 
         session.on('error', (err) => {
             session.close();
