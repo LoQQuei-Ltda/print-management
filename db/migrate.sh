@@ -71,6 +71,9 @@ EOF
 # Executa a verificação do banco de dados
 check_db
 
+echo $MIGRATION_DIR
+echo pwd
+
 # Lista e ordena os diretórios de migração
 for dir in $(ls -d $MIGRATION_DIR/*/ | sort); do
     # Extrai apenas o nome do diretório (ex: 01, 02)
