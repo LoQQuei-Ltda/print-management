@@ -11,8 +11,7 @@
     "lint": "eslint .",
     "setup": "node ./setup.js",
     "clean": "rimraf dist build",
-    "obfuscate": "javascript-obfuscator ./ --output ./dist --exclude node_modules,dist",
-    "build": "npm run clean && npm run obfuscate && nexe --input ./dist/bin/www.js --output ./build/print-management-linux --target linux-x64-10.0.0"
+    "obfuscate": "javascript-obfuscator ./ --output ./dist --exclude node_modules,dist"
   },
   "author": "",
   "license": "ISC",
@@ -34,27 +33,11 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
-    "boxednode": "^2.4.4",
     "eslint": "^9.18.0",
     "eslint-plugin-node": "^11.1.0",
     "globals": "^15.14.0",
     "javascript-obfuscator": "^4.1.1",
-    "nexe": "^4.0.0-rc.6",
-    "node-packer": "^0.1.7",
     "nodemon": "^3.1.9",
     "rimraf": "^6.0.1"
-  },
-  "pkg": {
-    "assets": [
-      "node_modules/**/*",
-      ".env.example"
-    ],
-    "scripts": [
-      "bin/www.js"
-    ],
-    "targets": [
-      "node20-linux-x64"
-    ],
-    "outputPath": "build"
   }
 }
