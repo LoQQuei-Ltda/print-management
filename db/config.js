@@ -10,7 +10,7 @@ const pool = new Pool({
     database: process.env.DB_DATABASE,
     user: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
-    max: process.env.DB_CONNECTION_LIMIT,
+    max: process.env.DB_CONNECTION_LIMIT || 9000,
 });
 
 module.exports = pool;
