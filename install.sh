@@ -4,7 +4,7 @@ echo "Atualizando pacotes..."
 sudo apt update && sudo apt upgrade -y
 
 echo "Instalando dependências..."
-sudo apt install -y net-tools nano samba cups nginx postgresql ufw npm
+sudo apt install -y net-tools nano samba cups nginx postgresql postgresql-contrib ufw npm
 
 echo "Clonando repositório..."
 git clone https://github.com/LoQQuei-Ltda/print-management.git /opt/print-management
@@ -27,7 +27,7 @@ sudo systemctl restart cups
 echo "Configurando firewall..."
 sudo ufw allow 137,138/udp
 sudo ufw allow 22,139,445,631/tcp
-sudo ufw enable
+sudo ufw --force enable
 
 echo "Criando banco de dados PostgreSQL..."
 sudo -u postgres createdb print_management
@@ -45,6 +45,21 @@ npm install
 
 echo "Configurando servidor..."
 npm run setup
+
+echo "Criando usuário e senha do banco de dados PostgreSQL..."
+DB_USER=$(grep DB_USER .env | cut -d '=' -f2)
+DB_PASSWORD=$(grep DB_PASSWORD .env | cut -d '=' -f2)
+
+if [[ -z "$DB_USER" || -z "$DB_PASSWORD" ]]; then
+  echo "Erro: Usuário ou senha do banco de dados não configurados no .env."
+  exit 1
+fi
+
+sudo -u postgres psql <<EOF
+CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD';
+GRANT ALL PRIVILEGES ON DATABASE print_management TO $DB_USER;
+ALTER USER $DB_USER WITH SUPERUSER;
+EOF
 
 echo "Iniciando migrações..."
 chmod +x db/migrate.sh
