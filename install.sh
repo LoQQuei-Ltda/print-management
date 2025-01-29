@@ -1,12 +1,10 @@
 #!/bin/bash
 
-exec > /dev/null 2>&1
-
 run_command() {
   local command="$1"
   local error_message="$2"
 
-  eval "$command"
+  eval "$command" > /dev/null 2>&1
   
   if [ $? -ne 0 ]; then
     echo "$error_message"
@@ -17,19 +15,16 @@ run_command() {
 echo "Atualizando pacotes..."
 run_command "sudo apt update && sudo apt upgrade -y" "Erro ao atualizar pacotes."
 
-
-echo "Instalando dependências..."
 echo "Instalando dependências..."
 run_command "sudo apt install -y nano samba cups nginx postgresql postgresql-contrib ufw npm jq" "Erro ao instalar dependências."
 
 echo "Clonando repositório..."
-echo "Clonando repositório..."
-run_command "git clone https://github.com/LoQQuei-Ltda/print-management.git /opt/print-management" "Erro ao clonar repositório."
+run_command "sudo git clone https://github.com/LoQQuei-Ltda/print-management.git /opt/print-management" "Erro ao clonar repositório."
 cd /opt/print-management || exit
 run_command "cp .env.example .env" "Erro ao copiar o arquivo .env."
 
-run_command "git config --global pull.rebase false" "Erro ao configurar git pull."
-run_command "git config --global status.showUntrackedFiles no" "Erro ao configurar git status."
+run_command "sudo git config --global pull.rebase false" "Erro ao configurar git pull."
+run_command "sudo git config --global status.showUntrackedFiles no" "Erro ao configurar git status."
 
 COMMIT_HASH=$(git rev-parse HEAD)
 INSTALL_DATE=$(date +%Y-%m-%d)
@@ -42,13 +37,18 @@ echo "{
 UPDATE_DIR="/opt/print-management/updates"
 EXECUTED_FILE="/opt/print-management/executed_updates.txt"
 
+if [ ! -f "$EXECUTED_FILE" ]; then
+  echo "Arquivo de atualizações executadas não encontrado. Criando o arquivo..."
+  touch "$EXECUTED_FILE"
+fi
+
 for i in $(seq -f "%02g" 1 99); do
   SCRIPT_FILE="$UPDATE_DIR/$i.sh"
 
   if [ -f "$SCRIPT_FILE" ]; then
     if ! grep -q "$i" "$EXECUTED_FILE"; then
       echo "Executando atualização $i..."
-      run_command "bash $SCRIPT_FILE" "Erro ao executar a atualização $i."
+      run_command "sudo bash $SCRIPT_FILE" "Erro ao executar a atualização $i."
       echo "$i" >> "$EXECUTED_FILE"
       echo "Atualização $i executada com sucesso!"
     else
@@ -74,22 +74,24 @@ run_command "sudo ufw allow 137,138/udp" "Erro ao configurar firewall (UDP)."
 run_command "sudo ufw allow 22,139,445,631/tcp" "Erro ao configurar firewall (TCP)."
 run_command "sudo ufw --force enable" "Erro ao habilitar firewall."
 
-echo "Criando banco de dados PostgreSQL..."
-run_command "sudo -u postgres createdb print_management" "Erro ao criar banco de dados PostgreSQL."
-
 echo "Configurando Node.js..."
-run_command "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash" "Erro ao instalar NVM."
+run_command "sudo curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash" "Erro ao instalar NVM."
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-run_command "nvm install 20" "Erro ao instalar Node.js."
-run_command "nvm use 20" "Erro ao usar Node.js 20."
+run_command "sudo nvm install 20" "Erro ao instalar Node.js."
+run_command "sudo nvm use 20" "Erro ao usar Node.js 20."
 
-echo "Instalando dependências Node.js..."
-run_command "npm install" "Erro ao instalar dependências Node.js."
+echo "Instalando dependências do projeto Node.js..."
+run_command "sudo npm install npm@latest" "Erro ao instalar atualização do npm."
+run_command "sudo npm install" "Erro ao instalar dependências Node.js."
 
 echo "Configurando servidor..."
-run_command "npm run setup" "Erro ao configurar servidor."
+node /opt/print-management/setup.js
+
+echo "Criando banco de dados PostgreSQL..."
+DB_DATABASE=$(grep DB_DATABASE .env | cut -d '=' -f2)
+run_command "sudo -u postgres createdb $DB_DATABASE" "Erro ao criar banco de dados PostgreSQL."
 
 echo "Criando usuário e senha do banco de dados PostgreSQL..."
 DB_USER=$(grep DB_USER .env | cut -d '=' -f2)
@@ -102,23 +104,29 @@ fi
 
 run_command "sudo -u postgres psql <<EOF
 CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD';
-GRANT ALL PRIVILEGES ON DATABASE print_management TO $DB_USER;
+GRANT ALL PRIVILEGES ON DATABASE $DB_DATABASE TO $DB_USER;
 ALTER USER $DB_USER WITH SUPERUSER;
 EOF" "Erro ao configurar usuário no PostgreSQL."
 
 echo "Iniciando migrações..."
-run_command "chmod +x db/migrate.sh" "Erro ao configurar permissões do script de migração."
-run_command "./db/migrate.sh" "Erro ao executar migrações."
+run_command "sudo chmod +x db/migrate.sh" "Erro ao configurar permissões do script de migração."
+run_command "sudo ./db/migrate.sh" "Erro ao executar migrações."
 
 echo "Configurando PM2..."
-run_command "pm2 start ecosystem.config.js" "Erro ao iniciar PM2."
-run_command "pm2 save" "Erro ao salvar configuração PM2."
-run_command "pm2 startup" "Erro ao configurar PM2 para iniciar na inicialização."
+run_command "sudo npm install -g pm2" "Erro ao instalar PM2."
+run_command "sudo pm2 start ecosystem.config.js" "Erro ao iniciar PM2."
+run_command "sudo pm2 save" "Erro ao salvar configuração PM2."
+run_command "sudo pm2 startup" "Erro ao configurar PM2 para iniciar na inicialização."
 
 echo "Configurando NGINX..."
 run_command "sudo cp nginx.conf /etc/nginx/sites-available/print-management" "Erro ao configurar NGINX."
 run_command "sudo ln -s /etc/nginx/sites-available/print-management /etc/nginx/sites-enabled/" "Erro ao criar link simbólico no NGINX."
 run_command "sudo nginx -t" "Erro ao testar configuração do NGINX."
 run_command "sudo systemctl reload nginx" "Erro ao recarregar NGINX."
+
+echo "Limpando sistema..."
+run_command "sudo apt autoclean -y" "Erro ao limpar sistema."
+run_command "sudo apt autoremove -y" "Erro ao limpar sistema."
+run_command "sudo journalctl --vacuum-time=7d" "Erro ao limpar registro de sistema."
 
 echo "Instalação concluída com sucesso!"

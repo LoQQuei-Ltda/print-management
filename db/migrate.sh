@@ -22,11 +22,6 @@ touch "$LOG_FILE"
 
 # Função para verificar a disponibilidade do banco de dados
 check_db() {
-    echo $DB_HOST
-    echo $DB_PORT
-    echo $DB_USERNAME
-    echo $DB_PASSWORD
-
     echo "Verificando a disponibilidade do banco de dados..."
     until PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USERNAME" -d "$DB_NAME" -c "SELECT 1" > /dev/null 2>&1; do
         echo "Banco de dados indisponível. Tentando novamente em 2 segundos..."

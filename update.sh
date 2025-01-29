@@ -5,14 +5,13 @@ run_command() {
   local command="$1"
   local error_message="$2"
 
-  eval "$command"
+  eval "$command" > /dev/null 2>&1
   
   if [ $? -ne 0 ]; then
     echo "$error_message"
     exit 1
   fi
 }
-
 
 UPDATE_DIR="/opt/print-management/updates"
 EXECUTED_FILE="/opt/print-management/executed_updates.txt"
@@ -64,7 +63,7 @@ if [ "$CURRENT_COMMIT_HASH" != "$SAVED_COMMIT_HASH" ]; then
   done
 
   run_command "chmod +x db/migrate.sh" "Erro ao configurar permissões do script de migração."
-  run_command "./db/migrate.sh" "Erro ao executar migrações."
+  run_command "sudo ./db/migrate.sh" "Erro ao executar migrações."
 
   echo "Atualização concluída com sucesso!"
 else
