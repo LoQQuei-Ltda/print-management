@@ -4,12 +4,50 @@ echo "Atualizando pacotes..."
 sudo apt update && sudo apt upgrade -y
 
 echo "Instalando dependências..."
-sudo apt install -y net-tools nano samba cups nginx postgresql postgresql-contrib ufw npm
+sudo apt install -y nano samba cups nginx postgresql postgresql-contrib ufw npm jq
 
 echo "Clonando repositório..."
 git clone https://github.com/LoQQuei-Ltda/print-management.git /opt/print-management
 cd /opt/print-management
 cp .env.example .env
+
+git config --global pull.rebase false
+git config --global status.showUntrackedFiles no
+
+COMMIT_HASH=$(git rev-parse HEAD)
+INSTALL_DATE=$(date +%Y-%m-%d)
+
+echo "Salvando informações de instalação: Commit $COMMIT_HASH, Data $INSTALL_DATE"
+
+# Criando o arquivo JSON
+echo "{
+  \"commit_hash\": \"$COMMIT_HASH\",
+  \"install_date\": \"$INSTALL_DATE\"
+}" > /opt/print-management/version.json
+
+UPDATE_DIR="/opt/print-management/updates"
+EXECUTED_FILE="/opt/print-management/executed_updates.txt"
+
+if [ ! -f "$EXECUTED_FILE" ]; then
+  touch "$EXECUTED_FILE"
+fi
+
+for i in $(seq -f "%02g" 1 99); do
+  SCRIPT_FILE="$UPDATE_DIR/$i.sh"
+
+  if [ -f "$SCRIPT_FILE" ]; then
+    if ! grep -q "$i" "$EXECUTED_FILE"; then
+      echo "Executando atualização $i..."
+
+      bash "$SCRIPT_FILE"
+
+      echo "$i" >> "$EXECUTED_FILE"
+      echo "Atualização $i executada com sucesso!"
+    else
+      echo "Atualização $i já foi executada. Pulando..."
+    fi
+  fi
+done
 
 echo "Configurando Samba..."
 sudo cp smb.conf /etc/samba/smb.conf

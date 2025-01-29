@@ -3,3 +3,5 @@ node_modules
 /monitor
 /build
 /dist
+version.json
+executed_updates.txt
