@@ -1,10 +1,23 @@
 #!/bin/bash
 echo "Verificando atualizações..."
 
+run_command() {
+  local command="$1"
+  local error_message="$2"
+
+  eval "$command"
+  
+  if [ $? -ne 0 ]; then
+    echo "$error_message"
+    exit 1
+  fi
+}
+
+
 UPDATE_DIR="/opt/print-management/updates"
 EXECUTED_FILE="/opt/print-management/executed_updates.txt"
 
-cd /opt/print-management
+cd /opt/print-management || exit 1
 CURRENT_COMMIT_HASH=$(git rev-parse HEAD)
 
 if [ -f /opt/print-management/version.json ]; then
@@ -17,7 +30,7 @@ fi
 if [ "$CURRENT_COMMIT_HASH" != "$SAVED_COMMIT_HASH" ]; then
   echo "Nova atualização encontrada. Iniciando atualização..."
 
-  git pull --no-verify origin main
+  run_command "git pull --no-verify origin main" "Erro ao atualizar repositório."
 
   NEW_COMMIT_HASH=$(git rev-parse HEAD)
   UPDATE_DATE=$(date +%Y-%m-%d)
@@ -40,7 +53,7 @@ if [ "$CURRENT_COMMIT_HASH" != "$SAVED_COMMIT_HASH" ]; then
       if ! grep -q "$i" "$EXECUTED_FILE"; then
         echo "Executando atualização $i..."
 
-        bash "$SCRIPT_FILE"
+        run_command "bash $SCRIPT_FILE" "Erro ao executar a atualização $i."
 
         echo "$i" >> "$EXECUTED_FILE"
         echo "Atualização $i executada com sucesso!"
@@ -50,8 +63,8 @@ if [ "$CURRENT_COMMIT_HASH" != "$SAVED_COMMIT_HASH" ]; then
     fi
   done
 
-  chmod +x db/migrate.sh
-  ./db/migrate.sh
+  run_command "chmod +x db/migrate.sh" "Erro ao configurar permissões do script de migração."
+  run_command "./db/migrate.sh" "Erro ao executar migrações."
 
   echo "Atualização concluída com sucesso!"
 else
