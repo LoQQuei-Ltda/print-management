@@ -75,14 +75,14 @@ run_command "sudo ufw allow 22,139,445,631/tcp" "Erro ao configurar firewall (TC
 run_command "sudo ufw --force enable" "Erro ao habilitar firewall."
 
 echo "Configurando Node.js..."
-run_command "sudo curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash" "Erro ao instalar NVM."
+run_command "sudo curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | sudo bash" "Erro ao instalar NVM."
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-run_command "sudo nvm install 20" "Erro ao instalar Node.js."
-run_command "sudo nvm use 20" "Erro ao usar Node.js 20."
+run_command "nvm install 20" "Erro ao instalar Node.js."
+run_command "nvm use 20" "Erro ao usar Node.js 20."
 
-echo "Instalando dependências do projeto Node.js..."
+echo "Instalando dependências do projeto..."
 run_command "sudo npm install npm@latest" "Erro ao instalar atualização do npm."
 run_command "sudo npm install" "Erro ao instalar dependências Node.js."
 

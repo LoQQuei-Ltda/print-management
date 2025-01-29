@@ -3,8 +3,7 @@ module.exports = {
         {
             name: 'print-management',
             script: 'bin/www.js',
-            instances: "max",
-            max_instances: 3,
+            instances: 1,
             exec_mode: "cluster"
         }
     ]
