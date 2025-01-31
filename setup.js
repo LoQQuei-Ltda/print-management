@@ -33,6 +33,13 @@ function askQuestion(index) {
 
   rl.question(questions[index], (answer) => {
     const key = questions[index].match(/\((.*?)\)/)[1];
+
+    if (key === 'DB_USERNAME' && answer.toLowerCase() === 'postgres') {
+      console.log('Erro: O nome de usuário "postgres" não é permitido para DB_USERNAME. Por favor, digite um nome de usuário diferente.');
+      askQuestion(index);
+      return;
+    }
+
     envConfig.push(`${key}=${answer}`);
     askQuestion(index + 1);
   });

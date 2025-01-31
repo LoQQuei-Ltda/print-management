@@ -22,6 +22,8 @@ const { getFiles } = require('../src/jobs/controllers/files');
 // Print File
 const { printFile } = require('../src/jobs/controllers/print');
 
+// Update
+const { updateVersion } = require('../src/update/controllers/updateVersion');
 
 
 const router = express.Router();
@@ -48,6 +50,8 @@ router.get('/files/:id', authenticatedRoute, getFiles);
 // Print File
 router.post('/print', authenticatedRoute, printFile);
 
+// Update
+router.post('/update', authenticatedRoute, updateVersion);
 
 
 module.exports = router;
