@@ -36,15 +36,6 @@ module.exports = {
             if (apiKey !== result) {
                 return responseHandler.forbidden(response, 'Chave de API inválida!');
             }
-            
-            let userInfo = request.user.userInfo;
-            userInfo = JSON.parse(userInfo);
-
-            const deviceIp = userInfo.ipv4;
-
-            if (CONSTANTS.SERVER.IP != deviceIp) {
-                return responseHandler.forbidden(response, 'Dispositivo não autorizado para usar essa chave de API');
-            }
 
             request.device = result;
             next();
