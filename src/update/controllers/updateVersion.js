@@ -1,5 +1,6 @@
 const schedule = require('node-schedule');
 const exec = require('child_process').exec;
+const execSync = require('child_process').execSync;
 const Log = require('../../../helper/log');
 const CONSTANTS = require('../../../helper/constants');
 const responseHandler = require('../../../helper/responseHandler');
@@ -25,6 +26,9 @@ module.exports = {
             setImmediate(() => {
                 schedule.scheduleJob(scheduleDate, async () => {
                     console.log('Iniciando a atualização de versão...');
+
+                    execSync('sudo chmod +x/opt/print-management/update.sh');
+
                     exec('sudo /opt/print-management/update.sh', (error, stdout, stderr) => {
                         if (error) {
                             console.error(`Erro ao executar update.sh: ${error.message}`);
