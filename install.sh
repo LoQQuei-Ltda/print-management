@@ -121,7 +121,7 @@ run_command 'sudo -u postgres psql -c "ALTER USER '$DB_USER' WITH SUPERUSER;"' '
 echo "Iniciando migrações..."
 run_command "sudo chmod +x db/migrate.sh" "Erro ao configurar permissões do script de migração."
 run_command "sudo ./db/migrate.sh" "Erro ao executar migrações."
-
+ 
 echo "Configurando PM2..."
 run_command "sudo npm install -g pm2" "Erro ao instalar PM2."
 run_command "pm2 start ecosystem.config.js" "Erro ao iniciar PM2."
