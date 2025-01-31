@@ -103,7 +103,7 @@ run_command "sudo ufw --force enable" "Erro ao habilitar firewall."
 
 echo "Criando banco de dados PostgreSQL..."
 DB_DATABASE=$(grep DB_DATABASE .env | cut -d '=' -f2)
-run_command "sudo -u postgres createdb $DB_DATABASE" "Erro ao criar banco de dados PostgreSQL."
+run_command 'sudo -u postgres psql -c "create database '$DB_DATABASE'"' "Erro ao criar banco de dados PostgreSQL."
 
 echo "Criando usuário e senha do banco de dados PostgreSQL..."
 DB_USER=$(grep DB_USER .env | cut -d '=' -f2)
@@ -114,9 +114,9 @@ if [[ -z "$DB_USER" || -z "$DB_PASSWORD" ]]; then
   exit 1
 fi
 
-run_command 'sudo -u postgres psql -c "CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD';"'
-run_command 'sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $DB_DATABASE TO $DB_USER;"'
-run_command 'sudo -u postgres psql -c "ALTER USER $DB_USER WITH SUPERUSER;"'
+run_command "sudo -u postgres psql -c \"CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD';\"" "Erro ao criar usuário no banco de dados PostgreSQL."
+run_command 'sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE '$DB_DATABASE' TO '$DB_USER';"' 'Erro ao conceder privilégios ao usuário no banco de dados PostgreSQL.'
+run_command 'sudo -u postgres psql -c "ALTER USER '$DB_USER' WITH SUPERUSER;"' 'Erro ao conceder privilégios ao usuário na tabela do banco de dados PostgreSQL.'
 
 echo "Iniciando migrações..."
 run_command "sudo chmod +x db/migrate.sh" "Erro ao configurar permissões do script de migração."

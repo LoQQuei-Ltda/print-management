@@ -29,7 +29,7 @@ fi
 if [ "$CURRENT_COMMIT_HASH" != "$SAVED_COMMIT_HASH" ]; then
   echo "Nova atualização encontrada. Iniciando atualização..."
 
-  run_command "git pull --no-verify origin main" "Erro ao atualizar repositório."
+  run_command "sudo git pull --no-verify origin main" "Erro ao atualizar repositório."
 
   NEW_COMMIT_HASH=$(git rev-parse HEAD)
   UPDATE_DATE=$(date +%Y-%m-%d)
@@ -52,9 +52,9 @@ if [ "$CURRENT_COMMIT_HASH" != "$SAVED_COMMIT_HASH" ]; then
       if ! grep -q "$i" "$EXECUTED_FILE"; then
         echo "Executando atualização $i..."
 
-        run_command "bash $SCRIPT_FILE" "Erro ao executar a atualização $i."
-
-        echo "$i" >> "$EXECUTED_FILE"
+        run_command "sudo bash $SCRIPT_FILE" "Erro ao executar a atualização $i."
+        echo "$i" | sudo tee -a "$EXECUTED_FILE" > /dev/null
+        
         echo "Atualização $i executada com sucesso!"
       else
         echo "Atualização $i já foi executada. Pulando..."
@@ -62,7 +62,7 @@ if [ "$CURRENT_COMMIT_HASH" != "$SAVED_COMMIT_HASH" ]; then
     fi
   done
 
-  run_command "chmod +x db/migrate.sh" "Erro ao configurar permissões do script de migração."
+  run_command "sudo chmod +x db/migrate.sh" "Erro ao configurar permissões do script de migração."
   run_command "sudo ./db/migrate.sh" "Erro ao executar migrações."
 
   echo "Atualização concluída com sucesso!"
