@@ -8,10 +8,14 @@ const responseHandler = require('../../../helper/responseHandler');
 module.exports = {
     updateVersion: async (request, response) => {
         try {
-            const { hour, minute } = request.body;
+            let { hour, minute } = request.body;
 
-            if (!hour || !minute) {
-                return responseHandler.badRequest(response, 'Hour e minute não podem ser vazios!');
+            if (!hour) {
+                hour = CONSTANTS.UPDATE.DEFAULT_HOUR;
+            }
+
+            if (!minute) {
+                minute = CONSTANTS.UPDATE.DEFAULT_MINUTE;
             }
 
             const now = new Date();

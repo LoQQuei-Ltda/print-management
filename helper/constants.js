@@ -47,6 +47,10 @@ const CONSTANTS = {
         OID_LEVEL: '1.3.6.1.2.1.43.11.1.1.9'
     },
     TIME_ZONE: 'America/Sao_Paulo',
+    UPDATE: {
+        DEFAULT_HOUR: 6,
+        DEFAULT_MINUTE: 0
+    }
 }
 
 module.exports = CONSTANTS;
