@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS print_management.filePages (
     id varchar(50) NOT NULL,
     userId varchar(50) NOT NULL,
     assetId varchar(50) DEFAULT NULL,
+    fileName text NOT NULL,
     pages int NOT NULL,
     path TEXT NOT NULL,
     createdAt timestamp NOT NULL,

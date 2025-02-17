@@ -108,7 +108,7 @@ module.exports = {
             }
 
             const fileName = path.basename(filePath).replace(ext, '');
-
+            const fileNameSave = path.basename(filePath)
             if (lastFile.has(fileName)) {
                 return;
             }
@@ -146,7 +146,7 @@ module.exports = {
                 return;
             }
 
-            const data = [id, userId, null, pages, newFilePath.toString(), new Date(), null, false, false];
+            const data = [id, userId, null, fileNameSave, pages, newFilePath.toString(), new Date(), null, false, false];
 
              await FilesModel.insert(data);
         });

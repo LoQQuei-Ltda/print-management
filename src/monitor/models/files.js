@@ -71,7 +71,7 @@ module.exports = {
     },
     insert: async (data) => {
         try {
-            const sql = `INSERT INTO ${process.env.DB_DATABASE}.filePages (id, userId, assetId, pages, path, createdAt, deletedAt, synced, printed) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`;
+            const sql = `INSERT INTO ${process.env.DB_DATABASE}.filePages (id, userId, assetId, fileName, pages, path, createdAt, deletedAt, synced, printed) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`;
             
             const result = await Core(sql, data);
             return result;
