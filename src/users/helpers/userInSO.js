@@ -15,10 +15,10 @@ module.exports = {
             const username = id.replace(/-/g, '');
     
             try {
-                execSync(`id -u ${username}`, { stdio: 'ignore' });
+                execSync(`sudo id -u ${username}`, { stdio: 'ignore' });
             } catch {
                 execSync(`sudo useradd -m -s /bin/bash --badname ${username}`);
-                execSync(`echo "${username}:${password}" | sudo chpasswd`);
+                execSync(`sudo echo "${username}:${password}" | sudo chpasswd`);
             }
         
             const userFolder = `${basePath}/${username}`;
