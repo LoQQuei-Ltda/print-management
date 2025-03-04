@@ -17,6 +17,12 @@ DB_USERNAME=${DB_USERNAME}
 DB_PASSWORD=${DB_PASSWORD}
 DB_NAME=${DB_DATABASE}
 
+echo "DB_HOST: $DB_HOST"
+echo "DB_PORT: $DB_PORT"
+echo "DB_USERNAME: $DB_USERNAME"
+echo "DB_PASSWORD: $DB_PASSWORD"
+echo "DB_NAME: $DB_NAME"
+
 # Cria o arquivo de log se não existir
 touch "$LOG_FILE"
 
