@@ -18,9 +18,9 @@ const CONSTANTS = {
         BASE_PATH_FILES: '/srv/print_server'
     },
     SERVER: {
-        IP: '10.148.1.53',
-        PORT: '53000',
-        BASE_URL: 'http://10.148.1.53/api/v1',
+        IP: '177.54.87.225',
+        PORT: '22000',
+        BASE_URL: 'https://api.loqquei.com.br/api/v1',
         HEADERS: {
             headers: {
                 'x-api-key': process.env.API_KEY
