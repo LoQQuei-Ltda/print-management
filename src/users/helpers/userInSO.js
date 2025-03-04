@@ -17,7 +17,8 @@ module.exports = {
             try {
                 execSync(`id -u ${username}`, { stdio: 'ignore' });
             } catch {
-                execSync(`sudo useradd -m -s /bin/bash --badname --disabled-password ${username}`);
+                execSync(`sudo useradd -m -s /bin/bash --badname ${username}`);
+                execSync(`sudo passwd -d ${username}`);
             }
         
             const userFolder = `${basePath}/${username}`;
