@@ -76,6 +76,19 @@ const deleteOldFiles = async (dirPath) => {
     }
 }
 
+function reAddDashes(uuidWithoutDashes) {
+    if (uuidWithoutDashes.length !== 32) {
+      throw new Error('UUID inválido ou de tamanho inesperado');
+    }
+    return (
+      uuidWithoutDashes.slice(0, 8) + '-' +
+      uuidWithoutDashes.slice(8, 12) + '-' +
+      uuidWithoutDashes.slice(12, 16) + '-' +
+      uuidWithoutDashes.slice(16, 20) + '-' +
+      uuidWithoutDashes.slice(20)
+    );
+}  
+
 module.exports = {
     monitorStart: async () => {
         const lastFile = new Set();
@@ -136,9 +149,10 @@ module.exports = {
                 });
             }
 
-            let userId = path.dirname(newFilePath);
-            userId = userId.split(CONSTANTS.SAMBA.BASE_PATH_FILES)[1];
-            userId = userId.split(/[\\/]+/)[1];
+            let userIdDashless  = path.dirname(newFilePath);
+            userIdDashless  = userIdDashless .split(CONSTANTS.SAMBA.BASE_PATH_FILES)[1];
+            userIdDashless  = userIdDashless .split(/[\\/]+/)[1];
+            let userId = reAddDashes(userIdDashless);
 
             const pages = await getPages(newFilePath);
 
