@@ -29,6 +29,28 @@ module.exports = {
         }
     },
     /**
+     * Coleta o usuário pelo username
+     * @param {string} id 
+     * @returns 
+     */
+    getByUsername: async (username) => {
+        try {
+            const sql = `SELECT * FROM ${process.env.DB_DATABASE}.users WHERE username = $1;`;
+            const result = await Core(sql, [username]);
+            return result;
+        } catch (error) {
+            Log.error({
+                entity: CONSTANTS.LOG.MODULE.USERS,
+                operation: 'Get By Id',
+                errorMessage: error.message,
+                errorStack: error.stack
+            });
+            return {
+                message: "Ocorreu um erro ao buscar o usuário! Tente novamente mais tarde"
+            };
+        }
+    },
+    /**
      * Insere um novo usuário
      * @param {Array} data 
      * @returns 

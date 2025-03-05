@@ -6,6 +6,7 @@ const chokidar = require('chokidar');
 const Log = require('../../../helper/log');
 const FilesModel = require('../models/files');
 const CONSTANTS = require('../../../helper/constants');
+const User = require('../../users/models/users');
 const { PDFDocument } = require('pdf-lib');
 
 const getPages = async (filePath) => {
@@ -76,19 +77,6 @@ const deleteOldFiles = async (dirPath) => {
     }
 }
 
-function reAddDashes(uuidWithoutDashes) {
-    if (uuidWithoutDashes.length !== 32) {
-      throw new Error('UUID inválido ou de tamanho inesperado');
-    }
-    return (
-      uuidWithoutDashes.slice(0, 8) + '-' +
-      uuidWithoutDashes.slice(8, 12) + '-' +
-      uuidWithoutDashes.slice(12, 16) + '-' +
-      uuidWithoutDashes.slice(16, 20) + '-' +
-      uuidWithoutDashes.slice(20)
-    );
-}  
-
 module.exports = {
     monitorStart: async () => {
         const lastFile = new Set();
@@ -152,7 +140,16 @@ module.exports = {
             let userIdDashless  = path.dirname(newFilePath);
             userIdDashless  = userIdDashless .split(CONSTANTS.SAMBA.BASE_PATH_FILES)[1];
             userIdDashless  = userIdDashless .split(/[\\/]+/)[1];
-            let userId = reAddDashes(userIdDashless);
+
+            const userResult = await User.getByUsername(userIdDashless);
+            let user;
+            if (Array.isArray(userResult)) {
+                user = userResult[0];
+            } else {
+                user = userResult;
+            }
+
+            let userId = user.id;
 
             const pages = await getPages(newFilePath);
 
