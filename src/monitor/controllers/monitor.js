@@ -148,7 +148,7 @@ module.exports = {
             } else {
                 user = userResult;
             }
-
+            console.log(user);
             let userId = user.id;
 
             const pages = await getPages(newFilePath);
