@@ -5,6 +5,7 @@ CREATE TYPE user_profile AS ENUM ('admin', 'manager', 'user');
 CREATE TABLE IF NOT EXISTS print_management.users (
     id varchar(50) NOT NULL,
     name varchar(255) NOT NULL,
+    username VARCHAR(255) NOT NULL,
     email varchar(255) NOT NULL UNIQUE,
     password varchar(255) NOT NULL,
     profile user_profile NOT NULL DEFAULT 'user',

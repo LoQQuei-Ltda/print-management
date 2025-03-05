@@ -22,6 +22,7 @@ module.exports = {
             for (let user of institutionUsers) {
                 const { id, name, email, password, profile, createdAt, deletedAt } = user;
 
+                const username = id.replace(/-/g, '');
                 const dbUser = await User.getById(id);
 
                 if (dbUser && dbUser.id) {
@@ -32,13 +33,13 @@ module.exports = {
                     const { name: dbName, email: dbEmail, password: dbPassword, profile: dbProfile, createdAt: dbCreatedAt, deletedAt: dbDeletedAt } = dbUser;
                     
                     if (name !== dbName || email !== dbEmail || password !== dbPassword || profile !== dbProfile || createdAt !== dbCreatedAt || deletedAt !== dbDeletedAt) {
-                        await User.update([name, email, password, profile, createdAt, new Date(), deletedAt, id]);
+                        await User.update([name, username, email, password, profile, createdAt, new Date(), deletedAt, id]);
                     }
                 } else {
-                    await User.insert([id, name, email, password, profile, createdAt, new Date(), deletedAt]);
+                    await User.insert([id, name, username, email, password, profile, createdAt, new Date(), deletedAt]);
                 }
 
-                await createUserInSO(id, password);
+                await createUserInSO(id);
             }
 
             return {

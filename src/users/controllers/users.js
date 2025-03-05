@@ -28,7 +28,7 @@ module.exports = {
                 return response.status(400).json({ message: user.message });
             }
 
-            await createUserInSO(id, password);
+            await createUserInSO(id);
 
             return response.status(201).json({
                 message: 'Usuário criado com sucesso!'
@@ -52,8 +52,11 @@ module.exports = {
                 return response.status(400).json({ message: 'Usuário não encontrado!' });
             }
 
+            const username = id.replace(/-/g, '');
+            
             const user = await User.update([
                 name,
+                username,
                 email,
                 password,
                 profile,
@@ -67,7 +70,7 @@ module.exports = {
                 return response.status(400).json({ message: user.message });
             }
 
-            await createUserInSO(id, password);
+            await createUserInSO(id);
 
             return response.status(201).json({
                 message: 'Usuário alterado com sucesso!'

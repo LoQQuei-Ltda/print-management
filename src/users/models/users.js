@@ -35,7 +35,7 @@ module.exports = {
      */
     insert: async (data) => {
         try {
-            const sql = `INSERT INTO ${process.env.DB_DATABASE}.users (id, name, email, password, profile, createdAt, updatedAt, deletedAt) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);`;
+            const sql = `INSERT INTO ${process.env.DB_DATABASE}.users (id, name, username, email, password, profile, createdAt, updatedAt, deletedAt) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);`;
             const result = await Core(sql, data);
             return result;
         } catch (error) {
@@ -58,7 +58,7 @@ module.exports = {
      */
     update: async (data) => {
         try {
-            const sql = `UPDATE ${process.env.DB_DATABASE}.users SET name = $1, email = $2, password = $3, profile = $4, createdAt = $5, updatedAt = $6, deletedAt = $7 WHERE id = $8;`;
+            const sql = `UPDATE ${process.env.DB_DATABASE}.users SET name = $1, username = $2, email = $3, password = $4, profile = $5, createdAt = $6, updatedAt = $7, deletedAt = $8 WHERE id = $9;`;
             const result = await Core(sql, data);
             return result;
         } catch (error) {
