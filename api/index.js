@@ -14,7 +14,7 @@ const { createUser, updateUser } = require('../src/users/controllers/users');
 const { manualSync } = require('../src/updateSync/controllers/manualSync');
 
 // Printers
-const { createPrinter, updatePrinter } = require('../src/printers/controllers/printers');
+const { createPrinter, updatePrinter, getPrinters } = require('../src/printers/controllers/printers');
 
 // Files
 const { getFiles } = require('../src/jobs/controllers/files');
@@ -41,6 +41,7 @@ router.put('/users', authenticatedRoute, updateUser);
 router.post('/sync', authenticatedRoute, manualSync);
 
 // Printers
+router.get('/printers', authenticatedRoute, getPrinters);
 router.post('/printers', authenticatedRoute, createPrinter);
 router.put('/printers', authenticatedRoute, updatePrinter);
 
