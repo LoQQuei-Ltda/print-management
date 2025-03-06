@@ -28,6 +28,7 @@ module.exports = {
                     console.log(error);
                     console.log(error.response.data);
                     console.log(error.response.data.errors);
+                    console.log(file)
                     Log.error({
                         entity: CONSTANTS.LOG.MODULE.TASK,
                         operation: 'Verify And Sincronize Files',
