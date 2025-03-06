@@ -37,7 +37,7 @@ monitorStart();
 // CORS
 app.use(cors());
 
-app.use('/api', apiRouter);
+app.use('/api', cors(), apiRouter);
 
 // Tratamento de erro 404
 app.use(function(request, response) {

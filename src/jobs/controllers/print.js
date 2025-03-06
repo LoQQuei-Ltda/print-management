@@ -32,7 +32,6 @@ module.exports = {
             }
 
             const printerName = printer.name;
-            console.log(printer);
             
             if (!fs.existsSync(file.path)) {
                 await Files.delete(fileId);
