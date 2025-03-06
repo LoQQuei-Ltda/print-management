@@ -3,7 +3,6 @@ const cors = require('cors');
 const logger = require('morgan');
 const express = require('express');
 const bodyParser = require('body-parser');
-app.use(bodyParser.json({ strict: false }));
 
 // Constantes
 const responseHandler = require('./helper/responseHandler');
@@ -25,6 +24,7 @@ const { monitorStart } = require('./src/monitor/controllers/monitor');
 const app = express();
 
 // Middlewares
+app.use(bodyParser.json({ strict: false }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(logger('dev'));
