@@ -2,6 +2,8 @@
 const cors = require('cors');
 const logger = require('morgan');
 const express = require('express');
+const bodyParser = require('body-parser');
+app.use(bodyParser.json({ strict: false }));
 
 // Constantes
 const responseHandler = require('./helper/responseHandler');

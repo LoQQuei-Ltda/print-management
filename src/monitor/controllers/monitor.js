@@ -95,68 +95,72 @@ module.exports = {
         });
         
         watcher.on('add', async (filePath) => {
-            const ext = path.extname(filePath);
-            const fileExtension = ext.toLowerCase();
-
-            if (fileExtension != '.pdf') {
-                await deleteFile(filePath);
-                return;
-            }
-
-            if (path.dirname(filePath) == CONSTANTS.SAMBA.BASE_PATH_FILES) {
-                await deleteFile(filePath);
-                return;
-            }
-
-            const fileNameSave = path.basename(filePath);
-            console.log(fileNameSave);
-            const fileName = fileNameSave.replace(ext, '');
-
-            if (lastFile.has(fileName)) {
-                return;
-            }
-
-            const result = await FilesModel.getById(fileName);
-
-            if (result && result.id) {
-                return;
-            }
-
-            const id = uuid();
-
-            lastFile.add(id);
-
-            const userIdDashless = path.dirname(filePath).split(CONSTANTS.SAMBA.BASE_PATH_FILES)[1].split(/[\\/]+/)[1];
-            const userResult = await User.getByUsername(userIdDashless);
-            let user;
-            if (Array.isArray(userResult)) {
-                user = userResult[0];
-            } else {
-                user = userResult;
-            }
-
-            const userId = user.id;
-            const pages = await getPages(filePath);
-
-            if (pages === 'Error') {
-                return;
-            }
-
-            const newFilePath = path.join(path.dirname(filePath), id + ext);
-
-            const data = [id, userId, null, fileNameSave, pages, newFilePath, new Date(), null, false, false];
-
-            await FilesModel.insert(data);
-
             try {
-                await fs.promises.rename(filePath, newFilePath);
+                const ext = path.extname(filePath);
+                const fileExtension = ext.toLowerCase();
+
+                if (fileExtension != '.pdf') {
+                    await deleteFile(filePath);
+                    return;
+                }
+
+                if (path.dirname(filePath) == CONSTANTS.SAMBA.BASE_PATH_FILES) {
+                    await deleteFile(filePath);
+                    return;
+                }
+
+                const fileNameSave = path.basename(filePath);
+                console.log(fileNameSave);
+                const fileName = fileNameSave.replace(ext, '');
+
+                if (lastFile.has(fileName)) {
+                    return;
+                }
+
+                const result = await FilesModel.getById(fileName);
+
+                if (result && result.id) {
+                    return;
+                }
+
+                const id = uuid();
+
+                lastFile.add(id);
+
+                const userIdDashless = path.dirname(filePath).split(CONSTANTS.SAMBA.BASE_PATH_FILES)[1].split(/[\\/]+/)[1];
+                const userResult = await User.getByUsername(userIdDashless);
+                let user;
+                if (Array.isArray(userResult)) {
+                    user = userResult[0];
+                } else {
+                    user = userResult;
+                }
+
+                const userId = user.id;
+                const pages = await getPages(filePath);
+
+                if (pages === 'Error') {
+                    return;
+                }
+
+                const newFilePath = path.join(path.dirname(filePath), id + ext);
+
+                const data = [id, userId, null, fileNameSave, pages, newFilePath, new Date(), null, false, false];
+
+                await FilesModel.insert(data);
+
+                try {
+                    await fs.promises.rename(filePath, newFilePath);
+                } catch (error) {
+                    Log.error({
+                        entity: CONSTANTS.LOG.MODULE.MONITOR,
+                        operation: 'Add',
+                        errorMessage: error.message,
+                        errorStack: error.stack
+                    });
+                }
             } catch (error) {
-                Log.error({
-                    entity: CONSTANTS.LOG.MODULE.MONITOR,
-                    operation: 'Add',
-                    errorMessage: error.message,
-                    errorStack: error.stack
-                });
+                console.error(error);
             }
         });
 
