@@ -73,8 +73,6 @@ module.exports = {
                 console.error(result.message);
             }
 
-            console.log(errorStack); // retirar
-
             return;
         } catch (error) {
             console.error(error);
