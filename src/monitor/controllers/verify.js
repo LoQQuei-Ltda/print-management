@@ -25,6 +25,7 @@ module.exports = {
                 try {
                     response = await axios.post(`${CONSTANTS.SERVER.BASE_URL}/manager/printedByUser`, body, CONSTANTS.SERVER.HEADERS)
                 } catch (error) {
+                    console.log(error);
                     Log.error({
                         entity: CONSTANTS.LOG.MODULE.TASK,
                         operation: 'Verify And Sincronize Files',
