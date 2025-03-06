@@ -142,11 +142,11 @@ module.exports = {
                 return;
             }
 
-            const data = [id, userId, null, fileNameSave, pages, filePath, new Date(), null, false, false];
+            const newFilePath = path.join(path.dirname(filePath), id + ext);
+
+            const data = [id, userId, null, fileNameSave, pages, newFilePath, new Date(), null, false, false];
 
             await FilesModel.insert(data);
-
-            const newFilePath = path.join(path.dirname(filePath), id + ext);
 
             try {
                 await fs.promises.rename(filePath, newFilePath);
