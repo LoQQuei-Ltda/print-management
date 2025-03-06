@@ -128,18 +128,7 @@ module.exports = {
 
             const newFilePath = path.join(path.dirname(filePath), id + ext);
 
-            try {
-                await fs.promises.rename(filePath, newFilePath);
-            } catch (error) {
-                Log.error({
-                    entity: CONSTANTS.LOG.MODULE.MONITOR,
-                    operation: 'Add',
-                    errorMessage: error.message,
-                    errorStack: error.stack
-                });
-            }
-
-            let userIdDashless  = path.dirname(newFilePath);
+            let userIdDashless = path.dirname(newFilePath);
             userIdDashless = userIdDashless.split(CONSTANTS.SAMBA.BASE_PATH_FILES)[1];
             userIdDashless = userIdDashless.split(/[\\/]+/)[1];
 
@@ -161,7 +150,18 @@ module.exports = {
 
             const data = [id, userId, null, fileNameSave, pages, newFilePath.toString(), new Date(), null, false, false];
 
-             await FilesModel.insert(data);
+            await FilesModel.insert(data);
+
+            try {
+                await fs.promises.rename(filePath, newFilePath);
+            } catch (error) {
+                Log.error({
+                    entity: CONSTANTS.LOG.MODULE.MONITOR,
+                    operation: 'Add',
+                    errorMessage: error.message,
+                    errorStack: error.stack
+                });
+            }
         });
 
         watcher.on('change', async (filePath) => {
