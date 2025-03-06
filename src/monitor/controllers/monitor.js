@@ -95,73 +95,98 @@ module.exports = {
         });
         
         watcher.on('add', async (filePath) => {
-            try {
-                const ext = path.extname(filePath);
-                const fileExtension = ext.toLowerCase();
-
-                if (fileExtension != '.pdf') {
-                    await deleteFile(filePath);
-                    return;
-                }
-
-                if (path.dirname(filePath) == CONSTANTS.SAMBA.BASE_PATH_FILES) {
-                    await deleteFile(filePath);
-                    return;
-                }
-
-                const fileNameSave = path.basename(filePath);
-                console.log(fileNameSave);
-                const fileName = fileNameSave.replace(ext, '');
-
-                if (lastFile.has(fileName)) {
-                    return;
-                }
-
-                const result = await FilesModel.getById(fileName);
-
-                if (result && result.id) {
-                    return;
-                }
-
-                const id = uuid();
-
-                lastFile.add(id);
-
-                const userIdDashless = path.dirname(filePath).split(CONSTANTS.SAMBA.BASE_PATH_FILES)[1].split(/[\\/]+/)[1];
-                const userResult = await User.getByUsername(userIdDashless);
-                let user;
-                if (Array.isArray(userResult)) {
-                    user = userResult[0];
-                } else {
-                    user = userResult;
-                }
-
-                const userId = user.id;
-                const pages = await getPages(filePath);
-
-                if (pages === 'Error') {
-                    return;
-                }
-
-                const newFilePath = path.join(path.dirname(filePath), id + ext);
-
-                const data = [id, userId, null, fileNameSave, pages, newFilePath, new Date(), null, false, false];
-
-                await FilesModel.insert(data);
-
+            setTimeout(async () => {
                 try {
-                    await fs.promises.rename(filePath, newFilePath);
+                    const ext = path.extname(filePath);
+                    const fileExtension = ext.toLowerCase();
+
+                    if (fileExtension != '.pdf') {
+                        await deleteFile(filePath);
+                        return;
+                    }
+
+                    if (path.dirname(filePath) == CONSTANTS.SAMBA.BASE_PATH_FILES) {
+                        await deleteFile(filePath);
+                        return;
+                    }
+
+                    const fileNameSave = path.basename(filePath);
+                    console.log("Processando arquivo:", fileNameSave);
+                    const fileName = fileNameSave.replace(ext, '');
+
+                    if (lastFile.has(fileName)) {
+                        return;
+                    }
+
+
+                    const result = await FilesModel.getById(fileName);
+                    console.log("arquivo coletado", result)
+                    if (result && result.id) {
+                        return;
+                    }
+
+                    const id = uuid();
+
+                    lastFile.add(id);
+
+                    const relativePath = path.relative(CONSTANTS.SAMBA.BASE_PATH_FILES, path.dirname(filePath));
+                    const parts = relativePath.split(path.sep);
+                    if (!parts || parts.length === 0) {
+                        Log.error({
+                            entity: CONSTANTS.LOG.MODULE.MONITOR,
+                            operation: 'Extract User',
+                            errorMessage: `Não foi possível extrair o usuário a partir do caminho: ${filePath}`,
+                            errorStack: ''
+                        });
+                        return;
+                    }
+                    const userIdDashless = parts[0];
+
+                    const userResult = await User.getByUsername(userIdDashless);
+                    let user;
+                    if (Array.isArray(userResult)) {
+                        user = userResult[0];
+                    } else {
+                        user = userResult;
+                    }
+                    
+                    if (!user || !user.id) {
+                        Log.error({
+                            entity: CONSTANTS.LOG.MODULE.MONITOR,
+                            operation: 'Get User',
+                            errorMessage: `Usuário não encontrado para: ${userIdDashless}`,
+                            errorStack: ''
+                        });
+                        return;
+                    }
+                    
+                    const userId = user.id;
+                    const pages = await getPages(filePath);
+
+                    if (pages === 'Error') {
+                        return;
+                    }
+
+                    const newFilePath = path.join(path.dirname(filePath), id + ext);
+
+                    const data = [id, userId, null, fileNameSave, pages, newFilePath, new Date(), null, false, false];
+
+                    await FilesModel.insert(data);
+
+                    try {
+                        await fs.promises.rename(filePath, newFilePath);
+                    } catch (error) {
+                        Log.error({
+                            entity: CONSTANTS.LOG.MODULE.MONITOR,
+                            operation: 'Add',
+                            errorMessage: error.message,
+                            errorStack: error.stack
+                        });
+                    }
                 } catch (error) {
-                    Log.error({
-                        entity: CONSTANTS.LOG.MODULE.MONITOR,
-                        operation: 'Add',
-                        errorMessage: error.message,
-                        errorStack: error.stack
-                    });
+                    console.error("Erro ao processar o arquivo:", filePath, error);
                 }
-            } catch (error) {
-                console.error(error);
-            }
+            }, 500);
         });
 
         watcher.on('change', async (filePath) => {
