@@ -108,9 +108,10 @@ module.exports = {
                 return;
             }
 
-            const fileName = path.basename(filePath).replace(ext, '');
-            const fileNameSave = path.basename(filePath)
-            if (lastFile.has(fileName)) {
+            const fileNameSave = path.basename(filePath);
+            const fileName = fileNameSave.replace(ext, '');
+            
+            if (lastFile.has(fileNameSave)) {
                 return;
             }
 
@@ -138,8 +139,8 @@ module.exports = {
             }
 
             let userIdDashless  = path.dirname(newFilePath);
-            userIdDashless  = userIdDashless .split(CONSTANTS.SAMBA.BASE_PATH_FILES)[1];
-            userIdDashless  = userIdDashless .split(/[\\/]+/)[1];
+            userIdDashless = userIdDashless.split(CONSTANTS.SAMBA.BASE_PATH_FILES)[1];
+            userIdDashless = userIdDashless.split(/[\\/]+/)[1];
 
             const userResult = await User.getByUsername(userIdDashless);
             let user;
