@@ -109,9 +109,10 @@ module.exports = {
             }
 
             const fileNameSave = path.basename(filePath);
+            console.log(fileNameSave);
             const fileName = fileNameSave.replace(ext, '');
-            
-            if (lastFile.has(fileNameSave)) {
+
+            if (lastFile.has(fileName)) {
                 return;
             }
 
