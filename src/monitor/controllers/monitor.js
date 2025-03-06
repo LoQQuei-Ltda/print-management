@@ -126,12 +126,7 @@ module.exports = {
 
             lastFile.add(id);
 
-            const newFilePath = path.join(path.dirname(filePath), id + ext);
-
-            let userIdDashless = path.dirname(newFilePath);
-            userIdDashless = userIdDashless.split(CONSTANTS.SAMBA.BASE_PATH_FILES)[1];
-            userIdDashless = userIdDashless.split(/[\\/]+/)[1];
-
+            const userIdDashless = path.dirname(filePath).split(CONSTANTS.SAMBA.BASE_PATH_FILES)[1].split(/[\\/]+/)[1];
             const userResult = await User.getByUsername(userIdDashless);
             let user;
             if (Array.isArray(userResult)) {
@@ -140,17 +135,18 @@ module.exports = {
                 user = userResult;
             }
 
-            let userId = user.id;
+            const userId = user.id;
+            const pages = await getPages(filePath);
 
-            const pages = await getPages(newFilePath);
-
-            if (pages == 'Error') {
+            if (pages === 'Error') {
                 return;
             }
 
-            const data = [id, userId, null, fileNameSave, pages, newFilePath.toString(), new Date(), null, false, false];
+            const data = [id, userId, null, fileNameSave, pages, filePath, new Date(), null, false, false];
 
             await FilesModel.insert(data);
+
+            const newFilePath = path.join(path.dirname(filePath), id + ext);
 
             try {
                 await fs.promises.rename(filePath, newFilePath);
