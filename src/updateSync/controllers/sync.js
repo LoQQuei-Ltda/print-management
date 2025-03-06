@@ -5,7 +5,7 @@ const CONSTANTS = require('../../../helper/constants');
 module.exports = {
     updateSync: async () => {
         try {
-            await axios.post(CONSTANTS.SERVER.BASE_URL + '/manager/sync', {}, CONSTANTS.SERVER.HEADERS);
+            await axios.get(CONSTANTS.SERVER.BASE_URL + '/manager/sync', CONSTANTS.SERVER.HEADERS);
         } catch (error) {
             Log.error({
                 entity: 'task',
