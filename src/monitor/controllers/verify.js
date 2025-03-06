@@ -13,11 +13,11 @@ module.exports = {
             }
 
             for (let file of result) {
-                const { id, userid, pages, assetId } = file;
+                const { id, userid, pages, assetid } = file;
 
                 const body = {
                     userId: userid,
-                    assetId: assetId,
+                    assetId: assetid,
                     pages
                 }
 
