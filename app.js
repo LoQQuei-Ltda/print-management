@@ -35,7 +35,11 @@ schedulerInit();
 monitorStart();
 
 // CORS
-app.use(cors());
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
+    allowedHeaders: ['Origin', 'Content-Type', 'Accept', 'Authorization', 'X-Requested-With', 'X-CSRF-Token']
+}));
 
 app.use('/api', apiRouter);
 
