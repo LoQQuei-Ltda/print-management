@@ -35,13 +35,9 @@ schedulerInit();
 monitorStart();
 
 // CORS
-app.use(cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
-    allowedHeaders: ['Origin', 'Content-Type', 'Accept', 'Authorization', 'X-Requested-With', 'X-CSRF-Token']
-}));
+app.use(cors());
 
-app.use('/api', apiRouter);
+app.use('/api', cors(), apiRouter);
 
 // Tratamento de erro 404
 app.use(function(request, response) {
