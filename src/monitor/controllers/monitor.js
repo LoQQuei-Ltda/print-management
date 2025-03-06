@@ -111,16 +111,13 @@ module.exports = {
                     }
 
                     const fileNameSave = path.basename(filePath);
-                    console.log("Processando arquivo:", fileNameSave);
                     const fileName = fileNameSave.replace(ext, '');
 
                     if (lastFile.has(fileName)) {
                         return;
                     }
 
-
                     const result = await FilesModel.getById(fileName);
-                    console.log("arquivo coletado", result)
                     if (result && result.id) {
                         return;
                     }
