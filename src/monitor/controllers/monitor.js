@@ -79,10 +79,19 @@ const deleteOldFiles = async (dirPath) => {
 
 const waitForFile = async (filePath) => {
     let fileOpen = false;
+    let lastModifiedTime = 0;
+
     while (!fileOpen) {
         try {
-            await fs.promises.open(filePath, 'r');
-            fileOpen = true;
+            const stats = await fs.promises.stat(filePath);
+            const currentModifiedTime = stats.mtime.getTime();
+
+            if (currentModifiedTime === lastModifiedTime) {
+                fileOpen = true;
+            } else {
+                lastModifiedTime = currentModifiedTime;
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
         } catch {
             await new Promise(resolve => setTimeout(resolve, 500));
         }
@@ -135,7 +144,6 @@ module.exports = {
                     }
 
                     const id = uuid();
-
                     lastFile.add(id);
 
                     const relativePath = path.relative(CONSTANTS.SAMBA.BASE_PATH_FILES, path.dirname(filePath));
@@ -149,6 +157,7 @@ module.exports = {
                         });
                         return;
                     }
+                    
                     const userIdDashless = parts[0];
 
                     const userResult = await User.getByUsername(userIdDashless);
@@ -172,7 +181,7 @@ module.exports = {
                     const userId = user.id;
 
                     await waitForFile(filePath);
-                    
+
                     const pages = await getPages(filePath);
 
                     if (pages === 'Error') {
