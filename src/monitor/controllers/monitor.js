@@ -78,8 +78,9 @@ const deleteOldFiles = async (dirPath) => {
 
 const isFileLocked = async (filePath) => {
     try {
-        const file = await fs.promises.open(filePath, 'r');
-        await file.close();
+        const tempPath = filePath + '.tmp';
+        await fs.promises.rename(filePath, tempPath);
+        await fs.promises.rename(tempPath, filePath);
         return false;
     } catch {
         return true;
@@ -89,17 +90,18 @@ const isFileLocked = async (filePath) => {
 const waitForFile = async (filePath) => {
     let isLocked = await isFileLocked(filePath);
     let attempts = 0;
-    while (isLocked && attempts < 10) {
+    while (isLocked && attempts < 60) {
         console.log(`Esperando o arquivo ${filePath} terminar de ser gravado... (Tentativa ${attempts + 1})`);
         await new Promise(resolve => setTimeout(resolve, 1000));
         isLocked = await isFileLocked(filePath);
         attempts++;
     }
+
     if (isLocked) {
         Log.error({
             entity: CONSTANTS.LOG.MODULE.MONITOR,
             operation: 'WaitForFile',
-            errorMessage: `O arquivo ${filePath} ainda está sendo gravado após múltiplas tentativas.`,
+            errorMessage: `O arquivo ${filePath} ainda está sendo gravado após várias tentativas.`,
             errorStack: ''
         });
     }
@@ -201,7 +203,8 @@ module.exports = {
                 await FilesModel.insert(data);
 
                 try {
-                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    // Tentando renomear com um atraso adicional
+                    await new Promise(resolve => setTimeout(resolve, 2000)); // Atraso adicional de 2 segundos
                     await fs.promises.rename(filePath, newFilePath);
                 } catch (error) {
                     Log.error({
