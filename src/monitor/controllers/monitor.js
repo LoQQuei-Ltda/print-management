@@ -21,7 +21,6 @@ const getPages = async (filePath) => {
             errorMessage: error.message,
             errorStack: error.stack
         });
-
         return 'Error';
     }
 }
@@ -89,10 +88,20 @@ const isFileLocked = async (filePath) => {
 
 const waitForFile = async (filePath) => {
     let isLocked = await isFileLocked(filePath);
-    while (isLocked) {
-        console.log(`Esperando o arquivo ${filePath} terminar de ser gravado...`);
+    let attempts = 0;
+    while (isLocked && attempts < 10) {
+        console.log(`Esperando o arquivo ${filePath} terminar de ser gravado... (Tentativa ${attempts + 1})`);
         await new Promise(resolve => setTimeout(resolve, 1000));
         isLocked = await isFileLocked(filePath);
+        attempts++;
+    }
+    if (isLocked) {
+        Log.error({
+            entity: CONSTANTS.LOG.MODULE.MONITOR,
+            operation: 'WaitForFile',
+            errorMessage: `O arquivo ${filePath} ainda está sendo gravado após múltiplas tentativas.`,
+            errorStack: ''
+        });
     }
 };
 
@@ -112,18 +121,18 @@ module.exports = {
             depth: 99999,
             followSymlinks: false
         });
-        
+
         watcher.on('add', async (filePath) => {
             try {
                 const ext = path.extname(filePath);
                 const fileExtension = ext.toLowerCase();
 
-                if (fileExtension != '.pdf') {
+                if (fileExtension !== '.pdf') {
                     await deleteFile(filePath);
                     return;
                 }
-                
-                if (path.dirname(filePath) == CONSTANTS.SAMBA.BASE_PATH_FILES) {
+
+                if (path.dirname(filePath) === CONSTANTS.SAMBA.BASE_PATH_FILES) {
                     await deleteFile(filePath);
                     return;
                 }
@@ -164,7 +173,7 @@ module.exports = {
                 } else {
                     user = userResult;
                 }
-                
+
                 if (!user || !user.id) {
                     Log.error({
                         entity: CONSTANTS.LOG.MODULE.MONITOR,
@@ -174,11 +183,11 @@ module.exports = {
                     });
                     return;
                 }
-                
+
                 const userId = user.id;
 
                 await waitForFile(filePath);
-                
+
                 const pages = await getPages(filePath);
 
                 if (pages === 'Error') {
@@ -192,6 +201,7 @@ module.exports = {
                 await FilesModel.insert(data);
 
                 try {
+                    await new Promise(resolve => setTimeout(resolve, 2000));
                     await fs.promises.rename(filePath, newFilePath);
                 } catch (error) {
                     Log.error({
@@ -209,7 +219,7 @@ module.exports = {
         watcher.on('change', async (filePath) => {
             const fileExtension = path.extname(filePath).toLowerCase();
 
-            if (fileExtension != '.pdf') {
+            if (fileExtension !== '.pdf') {
                 await deleteFile(filePath);
             }
         });
