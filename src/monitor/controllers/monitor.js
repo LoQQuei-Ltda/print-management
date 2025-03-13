@@ -77,6 +77,18 @@ const deleteOldFiles = async (dirPath) => {
     }
 }
 
+const waitForFile = async (filePath) => {
+    let fileOpen = false;
+    while (!fileOpen) {
+        try {
+            await fs.promises.open(filePath, 'r');
+            fileOpen = true;
+        } catch {
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+    }
+};
+
 module.exports = {
     monitorStart: async () => {
         const lastFile = new Set();
@@ -158,6 +170,9 @@ module.exports = {
                     }
                     
                     const userId = user.id;
+
+                    await waitForFile(filePath);
+                    
                     const pages = await getPages(filePath);
 
                     if (pages === 'Error') {
