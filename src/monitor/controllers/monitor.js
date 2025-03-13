@@ -120,6 +120,8 @@ module.exports = {
         watcher.on('add', async (filePath) => {
             setTimeout(async () => {
                 try {
+                    await waitForFile(filePath);
+                    
                     const ext = path.extname(filePath);
                     const fileExtension = ext.toLowerCase();
 
@@ -127,7 +129,7 @@ module.exports = {
                         await deleteFile(filePath);
                         return;
                     }
-
+                    
                     if (path.dirname(filePath) == CONSTANTS.SAMBA.BASE_PATH_FILES) {
                         await deleteFile(filePath);
                         return;
@@ -181,8 +183,6 @@ module.exports = {
                     }
                     
                     const userId = user.id;
-
-                    await waitForFile(filePath);
 
                     const pages = await getPages(filePath);
 
