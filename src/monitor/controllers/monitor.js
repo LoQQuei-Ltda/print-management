@@ -77,26 +77,22 @@ const deleteOldFiles = async (dirPath) => {
     }
 }
 
+const isFileLocked = async (filePath) => {
+    try {
+        const file = await fs.promises.open(filePath, 'r');
+        await file.close();
+        return false;
+    } catch {
+        return true;
+    }
+};
+
 const waitForFile = async (filePath) => {
-    let lastModifiedTime = 0;
-    let stable = false;
-
-    while (!stable) {
-        try {
-            const stats = await fs.promises.stat(filePath);
-            const currentModifiedTime = stats.mtime.getTime();
-
-            console.log(currentModifiedTime, lastModifiedTime);
-
-            if (currentModifiedTime === lastModifiedTime) {
-                stable = true;
-            } else {
-                lastModifiedTime = currentModifiedTime;
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }
-        } catch {
-            await new Promise(resolve => setTimeout(resolve, 500));
-        }
+    let isLocked = await isFileLocked(filePath);
+    while (isLocked) {
+        console.log(`Esperando o arquivo ${filePath} terminar de ser gravado...`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        isLocked = await isFileLocked(filePath);
     }
 };
 
@@ -118,98 +114,96 @@ module.exports = {
         });
         
         watcher.on('add', async (filePath) => {
-            setTimeout(async () => {
-                try {
-                    await waitForFile(filePath);
-                    
-                    const ext = path.extname(filePath);
-                    const fileExtension = ext.toLowerCase();
+            try {
+                const ext = path.extname(filePath);
+                const fileExtension = ext.toLowerCase();
 
-                    if (fileExtension != '.pdf') {
-                        await deleteFile(filePath);
-                        return;
-                    }
-                    
-                    if (path.dirname(filePath) == CONSTANTS.SAMBA.BASE_PATH_FILES) {
-                        await deleteFile(filePath);
-                        return;
-                    }
-
-                    const fileNameSave = path.basename(filePath);
-                    const fileName = fileNameSave.replace(ext, '');
-
-                    if (lastFile.has(fileName)) {
-                        return;
-                    }
-
-                    const result = await FilesModel.getById(fileName);
-                    if (result && result.id) {
-                        return;
-                    }
-
-                    const id = uuid();
-                    lastFile.add(id);
-
-                    const relativePath = path.relative(CONSTANTS.SAMBA.BASE_PATH_FILES, path.dirname(filePath));
-                    const parts = relativePath.split(path.sep);
-                    if (!parts || parts.length === 0) {
-                        Log.error({
-                            entity: CONSTANTS.LOG.MODULE.MONITOR,
-                            operation: 'Extract User',
-                            errorMessage: `Não foi possível extrair o usuário a partir do caminho: ${filePath}`,
-                            errorStack: ''
-                        });
-                        return;
-                    }
-
-                    const userIdDashless = parts[0];
-
-                    const userResult = await User.getByUsername(userIdDashless);
-                    let user;
-                    if (Array.isArray(userResult)) {
-                        user = userResult[0];
-                    } else {
-                        user = userResult;
-                    }
-                    
-                    if (!user || !user.id) {
-                        Log.error({
-                            entity: CONSTANTS.LOG.MODULE.MONITOR,
-                            operation: 'Get User',
-                            errorMessage: `Usuário não encontrado para: ${userIdDashless}`,
-                            errorStack: ''
-                        });
-                        return;
-                    }
-                    
-                    const userId = user.id;
-
-                    const pages = await getPages(filePath);
-
-                    if (pages === 'Error') {
-                        return;
-                    }
-
-                    const newFilePath = path.join(path.dirname(filePath), id + ext);
-
-                    const data = [id, userId, null, fileNameSave, pages, newFilePath, new Date(), null, false, false];
-
-                    await FilesModel.insert(data);
-
-                    try {
-                        await fs.promises.rename(filePath, newFilePath);
-                    } catch (error) {
-                        Log.error({
-                            entity: CONSTANTS.LOG.MODULE.MONITOR,
-                            operation: 'Add',
-                            errorMessage: error.message,
-                            errorStack: error.stack
-                        });
-                    }
-                } catch (error) {
-                    console.error("Erro ao processar o arquivo:", filePath, error);
+                if (fileExtension != '.pdf') {
+                    await deleteFile(filePath);
+                    return;
                 }
-            }, 500);
+                
+                if (path.dirname(filePath) == CONSTANTS.SAMBA.BASE_PATH_FILES) {
+                    await deleteFile(filePath);
+                    return;
+                }
+
+                const fileNameSave = path.basename(filePath);
+                const fileName = fileNameSave.replace(ext, '');
+
+                if (lastFile.has(fileName)) {
+                    return;
+                }
+
+                const result = await FilesModel.getById(fileName);
+                if (result && result.id) {
+                    return;
+                }
+
+                const id = uuid();
+                lastFile.add(id);
+
+                const relativePath = path.relative(CONSTANTS.SAMBA.BASE_PATH_FILES, path.dirname(filePath));
+                const parts = relativePath.split(path.sep);
+                if (!parts || parts.length === 0) {
+                    Log.error({
+                        entity: CONSTANTS.LOG.MODULE.MONITOR,
+                        operation: 'Extract User',
+                        errorMessage: `Não foi possível extrair o usuário a partir do caminho: ${filePath}`,
+                        errorStack: ''
+                    });
+                    return;
+                }
+
+                const userIdDashless = parts[0];
+
+                const userResult = await User.getByUsername(userIdDashless);
+                let user;
+                if (Array.isArray(userResult)) {
+                    user = userResult[0];
+                } else {
+                    user = userResult;
+                }
+                
+                if (!user || !user.id) {
+                    Log.error({
+                        entity: CONSTANTS.LOG.MODULE.MONITOR,
+                        operation: 'Get User',
+                        errorMessage: `Usuário não encontrado para: ${userIdDashless}`,
+                        errorStack: ''
+                    });
+                    return;
+                }
+                
+                const userId = user.id;
+
+                await waitForFile(filePath);
+                
+                const pages = await getPages(filePath);
+
+                if (pages === 'Error') {
+                    return;
+                }
+
+                const newFilePath = path.join(path.dirname(filePath), id + ext);
+
+                const data = [id, userId, null, fileNameSave, pages, newFilePath, new Date(), null, false, false];
+
+                await FilesModel.insert(data);
+
+                try {
+                    await fs.promises.rename(filePath, newFilePath);
+                } catch (error) {
+                    Log.error({
+                        entity: CONSTANTS.LOG.MODULE.MONITOR,
+                        operation: 'Add',
+                        errorMessage: error.message,
+                        errorStack: error.stack
+                    });
+                }
+            } catch (error) {
+                console.error("Erro ao processar o arquivo:", filePath, error);
+            }
         });
 
         watcher.on('change', async (filePath) => {
