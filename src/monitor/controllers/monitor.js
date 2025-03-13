@@ -76,32 +76,41 @@ const deleteOldFiles = async (dirPath) => {
     }
 }
 
-const isFileLocked = async (filePath) => {
-    try {
-        const tempPath = filePath + '.tmp';
-        await fs.promises.rename(filePath, tempPath);
-        await fs.promises.rename(tempPath, filePath);
-        return false;
-    } catch {
-        return true;
-    }
-};
-
-const waitForFile = async (filePath) => {
-    let isLocked = await isFileLocked(filePath);
+// Espera até que o arquivo não esteja sendo gravado e tenta renomeá-lo
+const waitForFileAndRename = async (filePath) => {
     let attempts = 0;
+    let isLocked = true;
+    let lastModifiedTime = 0;
+
     while (isLocked && attempts < 60) {
-        console.log(`Esperando o arquivo ${filePath} terminar de ser gravado... (Tentativa ${attempts + 1})`);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        isLocked = await isFileLocked(filePath);
+        try {
+            const stats = await fs.promises.stat(filePath);
+            const currentModifiedTime = stats.mtime.getTime();
+
+            if (currentModifiedTime === lastModifiedTime) {
+                // Tenta renomear o arquivo
+                const tempPath = filePath + '.tmp';
+                await fs.promises.rename(filePath, tempPath);
+                await fs.promises.rename(tempPath, filePath);
+                isLocked = false;
+            } else {
+                lastModifiedTime = currentModifiedTime;
+                console.log(`Esperando o arquivo ${filePath} terminar de ser gravado...`);
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        } catch (error) {
+            console.log(`Arquivo ${filePath} ainda está em uso...`);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
         attempts++;
     }
 
     if (isLocked) {
         Log.error({
             entity: CONSTANTS.LOG.MODULE.MONITOR,
-            operation: 'WaitForFile',
-            errorMessage: `O arquivo ${filePath} ainda está sendo gravado após várias tentativas.`,
+            operation: 'WaitForFileAndRename',
+            errorMessage: `O arquivo ${filePath} ainda está sendo gravado após múltiplas tentativas.`,
             errorStack: ''
         });
     }
@@ -116,7 +125,6 @@ module.exports = {
         }
 
         const watcher = chokidar.watch(CONSTANTS.SAMBA.BASE_PATH_FILES, {
-            // eslint-disable-next-line no-useless-escape
             ignored: /(^|[\/\\])\../,
             persistent: true,
             ignoreInitial: false,
@@ -188,7 +196,8 @@ module.exports = {
 
                 const userId = user.id;
 
-                await waitForFile(filePath);
+                // Espera o arquivo ser gravado e não estar bloqueado
+                await waitForFileAndRename(filePath);
 
                 const pages = await getPages(filePath);
 
@@ -203,8 +212,6 @@ module.exports = {
                 await FilesModel.insert(data);
 
                 try {
-                    // Tentando renomear com um atraso adicional
-                    await new Promise(resolve => setTimeout(resolve, 2000)); // Atraso adicional de 2 segundos
                     await fs.promises.rename(filePath, newFilePath);
                 } catch (error) {
                     Log.error({
