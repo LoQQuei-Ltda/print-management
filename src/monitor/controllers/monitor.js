@@ -78,19 +78,21 @@ const deleteOldFiles = async (dirPath) => {
 }
 
 const waitForFile = async (filePath) => {
-    let fileOpen = false;
     let lastModifiedTime = 0;
+    let stable = false;
 
-    while (!fileOpen) {
+    while (!stable) {
         try {
             const stats = await fs.promises.stat(filePath);
             const currentModifiedTime = stats.mtime.getTime();
 
+            console.log(currentModifiedTime, lastModifiedTime);
+
             if (currentModifiedTime === lastModifiedTime) {
-                fileOpen = true;
+                stable = true;
             } else {
                 lastModifiedTime = currentModifiedTime;
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, 1000));
             }
         } catch {
             await new Promise(resolve => setTimeout(resolve, 500));
@@ -157,7 +159,7 @@ module.exports = {
                         });
                         return;
                     }
-                    
+
                     const userIdDashless = parts[0];
 
                     const userResult = await User.getByUsername(userIdDashless);
