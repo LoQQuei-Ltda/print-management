@@ -20,7 +20,7 @@ const CONSTANTS = {
     SERVER: {
         IP: '177.54.87.225',
         PORT: '53000',
-        BASE_URL: 'https://api.loqquei.com.br/api/v1',
+        BASE_URL: 'http://localhost',
         HEADERS: {
             headers: {
                 'x-api-key': process.env.API_KEY
