@@ -16,7 +16,7 @@ const questions = [
 ];
 
 const envConfig = [
-  'PORT=80',
+  'PORT=8080',
   'DB_DATABASE=print_management',
   'DB_HOST=localhost',
   'DB_PORT=5432',
