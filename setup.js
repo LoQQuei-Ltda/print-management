@@ -10,17 +10,17 @@ console.log('Por favor, preencha as informações abaixo para criar o arquivo .e
 
 const questions = [
   'Digite a chave de API registrada para esse IP (API_KEY): ',
-  'Digite o host do banco de dados (DB_HOST): ',
-  'Digite a porta do banco de dados (DB_PORT): ',
   'Digite o usuário do banco de dados (DB_USERNAME): ',
   'Digite a senha do banco de dados (DB_PASSWORD): ',
-  'Digite o limite de conexões com o banco de dados (DB_CONNECTION_LIMIT): ',
   'Digite o número de dias para excluir arquivos antigos (FILES_OLD_THRESHOLD_DAYS): ',
 ];
 
 const envConfig = [
   'PORT=80',
-  'DB_DATABASE=print_management'
+  'DB_DATABASE=print_management',
+  'DB_HOST=localhost',
+  'DB_PORT=5432',
+  'DB_CONNECTION_LIMIT=9000',
 ];
 
 function askQuestion(index) {
