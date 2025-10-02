@@ -9,18 +9,19 @@ const rl = readline.createInterface({
 console.log('Por favor, preencha as informações abaixo para criar o arquivo .env\n');
 
 const questions = [
-  'Digite o número da porta para o servidor (PORT): ',
   'Digite a chave de API registrada para esse IP (API_KEY): ',
   'Digite o host do banco de dados (DB_HOST): ',
   'Digite a porta do banco de dados (DB_PORT): ',
-  'Digite o nome do banco de dados (DB_DATABASE): ',
   'Digite o usuário do banco de dados (DB_USERNAME): ',
   'Digite a senha do banco de dados (DB_PASSWORD): ',
   'Digite o limite de conexões com o banco de dados (DB_CONNECTION_LIMIT): ',
   'Digite o número de dias para excluir arquivos antigos (FILES_OLD_THRESHOLD_DAYS): ',
 ];
 
-const envConfig = [];
+const envConfig = [
+  'PORT=80',
+  'DB_DATABASE=print_management'
+];
 
 function askQuestion(index) {
   if (index === questions.length) {
