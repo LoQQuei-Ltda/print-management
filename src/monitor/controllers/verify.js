@@ -14,7 +14,7 @@ module.exports = {
 
             for (let file of result) {
                 const { id, userid, pages, assetid, path, fileName  } = file;
-
+                console.log(file);
                 const body = {
                     userId: userid,
                     assetId: assetid,
