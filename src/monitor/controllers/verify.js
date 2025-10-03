@@ -13,14 +13,14 @@ module.exports = {
             }
 
             for (let file of result) {
-                const { id, userid, pages, assetid, path, fileName  } = file;
-                console.log(file);
+                const { id, userid, pages, assetid, path, fileName, filename  } = file;
+
                 const body = {
                     userId: userid,
                     assetId: assetid,
                     pages,
                     fileId: path,
-                    fileName
+                    fileName: filename || fileName
                 }
 
                 let response;
