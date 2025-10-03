@@ -12,22 +12,22 @@ module.exports = {
     createUserInSO: async (id) => {
         try {
             const username = id.replace(/-/g, '');
-    
+
             try {
                 execSync(`id -u ${username}`, { stdio: 'ignore' });
             } catch {
-                execSync(`sudo useradd -m -s /bin/bash --badname ${username}`);
-                execSync(`sudo passwd -d ${username}`);
+                execSync(`sudo -n useradd -m -s /bin/bash --badname ${username}`);
+                execSync(`sudo -n passwd -d ${username}`);
             }
-        
+
             const userFolder = `${basePath}/${username}`;
-        
+
             if (!fs.existsSync(userFolder)) {
                 fs.mkdirSync(userFolder, { recursive: true });
             }
-        
-            execSync(`sudo chown ${username}:${username} ${userFolder}`);
-            execSync(`sudo chmod 777 ${userFolder}`);
+
+            execSync(`sudo -n chown ${username}:${username} ${userFolder}`);
+            execSync(`sudo -n chmod 777 ${userFolder}`);
         } catch (error) {
             console.error(error);
         }
