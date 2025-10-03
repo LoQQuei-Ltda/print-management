@@ -73,6 +73,8 @@ module.exports = {
                 console.error(result.message);
             }
 
+            await Log.deleteOld();
+
             return;
         } catch (error) {
             console.error(error);

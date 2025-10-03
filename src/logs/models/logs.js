@@ -21,6 +21,19 @@ const Log = {
                 message: "Ocorreu um erro ao cadastrar o log! Tente novamente mais tarde"
             };
         }
+    },
+    deleteOld: async () => {
+        try {
+            const sql = `DELETE FROM ${process.env.DB_DATABASE}.logs WHERE createdAt < NOW() - INTERVAL '${process.env.FILES_OLD_THRESHOLD_DAYS} days';`;
+            
+            await Core(sql);
+
+            return;
+        } catch {
+            return {
+                message: "Ocorreu um erro ao excluir os logs antigos! Tente novamente mais tarde"
+            };
+        }
     }
 }
 
